@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <radialGradient id="bgGrad" cx="50%" cy="50%" r="70%">
+      <stop offset="0%" stop-color="#064e3b" />
+      <stop offset="60%" stop-color="#022c22" />
+      <stop offset="100%" stop-color="#011812" />
+    </radialGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fef08a" />
+      <stop offset="40%" stop-color="#f59e0b" />
+      <stop offset="100%" stop-color="#b45309" />
+    </linearGradient>
+    <linearGradient id="emeraldGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#34d399" />
+      <stop offset="100%" stop-color="#059669" />
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="6" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Background base rounded square -->
+  <rect width="512" height="512" rx="108" fill="url(#bgGrad)" />
+
+  <!-- Outer geometric star / octagonal rosette -->
+  <g transform="translate(256, 256)" stroke="url(#goldGrad)" stroke-width="3" fill="none" opacity="0.45">
+    <rect x="-170" y="-170" width="340" height="340" rx="20" transform="rotate(0)" />
+    <rect x="-170" y="-170" width="340" height="340" rx="20" transform="rotate(45)" />
+  </g>
+
+  <!-- Crescent and Star / Open Qur'an Emblem -->
+  <g transform="translate(256, 230)">
+    <!-- Golden Open Qur'an Base / Rehal -->
+    <path d="M-90,60 L-15,110 L-95,145 M90,60 L15,110 L95,145 M-15,110 L0,120 L15,110" stroke="url(#goldGrad)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+    
+    <!-- Open Holy Mushaf Pages -->
+    <path d="M-85,45 C-45,25 -25,48 0,55 C25,48 45,25 85,45 C75,80 30,70 0,82 C-30,70 -75,80 -85,45 Z" fill="url(#emeraldGrad)" opacity="0.9" stroke="url(#goldGrad)" stroke-width="2.5" />
+    
+    <!-- Qur'an Scripture Page lines -->
+    <path d="M-65,48 C-45,38 -25,48 -5,55 M-60,58 C-42,48 -22,58 -5,65 M65,48 C45,38 25,48 5,55 M60,58 C42,48 22,58 5,65" stroke="#fef3c7" stroke-width="2" stroke-linecap="round" opacity="0.75" />
+
+    <!-- Radiant Nur (Light Beam Rays) -->
+    <g stroke="url(#goldGrad)" stroke-width="3" stroke-linecap="round" opacity="0.85">
+      <line x1="0" y1="-80" x2="0" y2="-120" />
+      <line x1="-55" y1="-55" x2="-85" y2="-85" />
+      <line x1="55" y1="-55" x2="85" y2="-85" />
+      <line x1="-80" y1="0" x2="-115" y2="0" />
+      <line x1="80" y1="0" x2="115" y2="0" />
+    </g>
+
+    <!-- Golden Mihrab Minaret Dome Dome -->
+    <path d="M-40,-20 C-40,-75 0,-115 0,-115 C0,-115 40,-75 40,-20 Z" fill="none" stroke="url(#goldGrad)" stroke-width="4.5" filter="url(#glow)" />
+    <circle cx="0" cy="-125" r="7" fill="#fbbf24" />
+  </g>
+
+  <!-- Typography / Calligraphy banner -->
+  <text x="256" y="420" font-family="'Amiri', 'Traditional Arabic', serif" font-size="34" font-weight="bold" fill="url(#goldGrad)" text-anchor="middle" letter-spacing="2">نُور العِلْم</text>
+  <text x="256" y="452" font-family="'Inter', sans-serif" font-size="14" font-weight="600" fill="#a7f3d0" text-anchor="middle" letter-spacing="4">NURUL ILMI SERIES</text>
+</svg>

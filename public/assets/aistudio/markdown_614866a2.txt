@@ -1,0 +1,59 @@
+# Nurul Ilmi Series (نور العلم)
+## Integrated Qur’an Memorization, Islamic Studies & Financial Architecture
+**Addis Ababa, Ethiopia · EAT (UTC+3) · Ethiopian Birr (ETB)**
+
+---
+
+### Executive Overview
+
+Nurul Ilmi Series is an enterprise institutional management system engineered specifically for Islamic educational centers specializing in Qur’an Memorization (Hifz), Tajweed science, Islamic jurisprudence (Fiqh), student life, and double-entry charitable and tuition finance.
+
+The application is built on Next.js 15 (App Router), React 19, TypeScript 5.7, Tailwind CSS design tokens, and a normalized PostgreSQL schema with native Row-Level Security (RLS).
+
+---
+
+### Core Module Implementation Matrix
+
+| Module | Features & Capabilities |
+| :--- | :--- |
+| **1. Dashboard & Live Metrics** | Real-time counts of active/enrolled students, fee collections, outstanding receivables, net cashbook balance, donation pledges, and fast-action shortcuts. |
+| **2. Prayer Timings Engine** | Solar astronomical calculation engine calibrated for Addis Ababa (9.032° N, 38.747° E) using MWL conventions, Shafi/Hanafi Asr options, and live Azan countdowns. |
+| **3. Qur’an Hifz Tracker** | Three-tier daily recitation tracking: **Sabaq** (new lesson), **Sabqi** (recent revision), and **Manzil** (cumulative retention). Strict validation against the 114 Canonical Surahs with exact Ayah counts and Tajweed accuracy scoring. |
+| **4. Student Lifecycle & Admissions** | Comprehensive student directory with guardian mappings, emergency contacts, Hifz level assignments, status updates, and printable official student ID cards. |
+| **5. Bulk CSV Importer** | Ingestion pipeline with duplicate detection, Ethiopian phone number regex validation (`+2519...`, `09...`), and error previews. |
+| **6. Academic Performance & Transcripts** | Multi-subject assessment engine generating weighted term scores, passing criteria, and official printable academic dossiers. |
+| **7. Daily Attendance Register** | Class-by-class attendance recording for students and faculty tracking Present, Absent, Late, and Excused statuses with reason logging. |
+| **8. Fees & Invoicing (ETB)** | Decimal-safe tuition invoicing, partial payments, Telebirr and CBE Birr transaction tracking, and automatic cashbook synchronization. |
+| **9. Benefactor & Donor Management** | Individual and corporate benefactor registries, lifetime contribution ledgers, and committed pledge tracking. |
+| **10. Charity & Restricted Funds** | Dedicated workflows for Hifz Orphan Sponsorship, Zakat al-Mal, and Masjid infrastructure endowments. |
+| **11. Cashbook & General Ledger** | Audited multi-account tracking (Commercial Bank of Ethiopia, Awash Bank, Cash in Safe) with serialized vouchers (`IN-` and `EX-`). |
+| **12. Budget Management** | Departmental expenditure tracking against approved fiscal allocations with real-time burn-rate progress bars. |
+| **13. Zakat Calculator** | Interactive Fiqh calculator applying the 85-gram pure gold Nisab threshold and 2.5% Hawl liability calculations. |
+| **14. Faculty & HR Management** | Ustadh profiles with Ijazah credentials, Qira'at certifications, department assignments, and active contract statuses. |
+| **15. Inventory & Asset Control** | Stock management for Madinah Mushafs, study guides, and classroom furniture with automated reorder warnings. |
+| **16. Strategic KPIs & Milestones** | Institutional progress dashboard tracking operational objectives, target deadlines, and percentage completions. |
+| **17. Shura Council Governance** | Formal meeting registry tracking Shura agendas, voting attendees, approved resolutions, and follow-up actions. |
+| **18. Notices & Administrative Circulars**| Public bulletin board and policy governance center for term schedules and financial guidelines. |
+| **19. Document & Printing Center** | Dedicated `@media print` style sheets for Student ID Cards, Academic Transcripts, and Ethiopian Stamped Receipts. |
+| **20. Ethiopian (Ge'ez) Calendar Engine** | Beyene-Kudlek JDN conversion engine providing dual Gregorian/Ethiopian date displays in Amharic script and Ge'ez numerals. |
+| **21. AI Institutional Assistant** | Role-guarded AI query assistant with client rate limiting and local fallback for Hifz pacing and Tajweed rules. |
+| **22. Security & Rate Limiting** | Sliding-window in-memory rate limiting, strict Content-Security-Policy headers, and CSRF protection. |
+| **23. Audit Trail & System Log** | Immutable audit log capturing every administrative record creation, fee settlement, and data export. |
+
+---
+
+### Quick Start Guide
+
+#### Prerequisites
+* Node.js 20.x or higher
+* npm 10.x or higher
+* Docker Engine (optional, for containerized hosting)
+
+#### 1. Installation
+```bash
+# Clone the repository
+git clone https://github.com/your-org/nurul-ilmi-series.git
+cd nurul-ilmi-series
+
+# Install dependencies
+npm install

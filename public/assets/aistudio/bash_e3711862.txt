@@ -1,0 +1,2 @@
+# Create local environment configuration
+cp .env.example .env.local

@@ -1,0 +1,5 @@
+# Build production image and run containers in detached mode
+docker compose up -d --build
+
+# Verify container health probe
+docker compose ps

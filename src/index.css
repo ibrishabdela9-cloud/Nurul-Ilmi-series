@@ -1,0 +1,77 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+.font-arabic {
+  font-family: 'Amiri', serif;
+}
+
+.font-ethiopic {
+  font-family: 'Noto Sans Ethiopic', sans-serif;
+}
+
+/* Custom desktop scrollbar with emerald tint */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(2, 6, 23, 0.7);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(16, 185, 129, 0.25);
+  border-radius: 9999px;
+  border: 1px solid rgba(16, 185, 129, 0.1);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(16, 185, 129, 0.5);
+}
+
+/* Board card styles for enhanced depth and clarity */
+.board-card {
+  background: linear-gradient(145deg, rgba(15, 23, 42, 0.85) 0%, rgba(2, 6, 23, 0.95) 100%);
+  border: 1px solid rgba(30, 41, 59, 0.8);
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.board-card:hover {
+  border-color: rgba(16, 185, 129, 0.4);
+  box-shadow: 0 8px 30px -4px rgba(0, 0, 0, 0.7), 0 0 15px -2px rgba(16, 185, 129, 0.15);
+}
+
+.board-card-highlight {
+  background: linear-gradient(145deg, rgba(6, 78, 59, 0.3) 0%, rgba(2, 6, 23, 0.9) 100%);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  box-shadow: 0 4px 25px -2px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(16, 185, 129, 0.2);
+}
+
+/* Print styles for official Ethiopian stamped receipts, student IDs, and transcripts */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .print-surface, .print-surface * {
+    visibility: visible;
+  }
+  .print-surface {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    background: white !important;
+    color: black !important;
+    padding: 24px;
+    box-shadow: none !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+}

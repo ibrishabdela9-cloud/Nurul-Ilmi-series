@@ -1,0 +1,46 @@
+nurul-ilmi-series/
+├── .github/
+│   └── workflows/
+│       └── ci.yml                         # Automated CI pipeline (lint, tsc, test, build)
+├── __tests__/
+│   ├── institutional-calculations.test.ts # Prayer, Surah, Zakat, & Ethiopian Calendar unit tests
+│   └── security-and-validation.test.ts    # Rate limiter, financial invariants, & boundary tests
+├── app/
+│   ├── api/
+│   │   ├── assistant/route.ts             # AI Assistant with role-based guardrails & local mode
+│   │   ├── export/route.ts                # Audited data export endpoint with token generation
+│   │   └── health/route.ts                # System diagnostics & uptime health probe
+│   ├── globals.css                        # Institutional Islamic green/gold theme & @media print rules
+│   ├── layout.tsx                         # Root app shell with metadata & typography
+│   └── page.tsx                           # Main entry point mounting the portal engine
+├── components/
+│   ├── Portal.tsx                         # Consolidated 20-module institutional management system
+│   └── PrintableReceipt.tsx               # Official Ethiopian Birr receipt with seal & Ge'ez date
+├── lib/
+│   ├── csv-importer.ts                    # Bulk CSV parser with Ethiopian phone regex & duplicate detection
+│   ├── ethiopian-calendar.ts              # Beyene-Kudlek Ethiopian/Gregorian date engine & Ge'ez numerals
+│   ├── prayer.ts                          # Astronomical solar prayer calculations for Addis Ababa
+│   ├── quran-data.ts                      # Canonical 114-Surah registry with Ayah boundary validator
+│   ├── rate-limit.ts                      # In-memory sliding-window request throttling
+│   ├── store.ts                           # Normalized reactive state store with local fallback & audit logging
+│   └── supabase/
+│       ├── client.ts                      # Browser Supabase client factory
+│       └── server.ts                      # Server-side Supabase client with HTTP-only cookie support
+├── scripts/
+│   ├── provision.ts                       # Programmatic PostgreSQL database provisioning script
+│   └── verify-system.ts                   # Pre-flight diagnostic runner covering all 6 core sub-systems
+├── supabase/
+│   ├── migrations/
+│   │   └── 002_triggers_and_functions.sql # Automatic updated_at & atomic invoice balance triggers
+│   ├── schema.sql                         # 18 relational tables, custom PostgreSQL enums, & RLS policies
+│   └── seed.sql                           # Ethiopian baseline data (students, staff, budgets, cashbook)
+├── .dockerignore                          # Docker build exclusion rules
+├── .env.example                           # Safe environment variable template
+├── Dockerfile                             # Multi-stage production container build
+├── docker-compose.yml                     # Single-command self-hosted container deployment
+├── jest.config.js                         # Jest test runner configuration with ts-jest
+├── middleware.ts                          # Strict Content-Security-Policy & security headers
+├── next.config.ts                         # Next.js 15 production configuration
+├── package.json                           # Consolidated production dependencies
+├── README.md                              # Institutional operations manual and system documentation
+└── tsconfig.json                          # Strict TypeScript configuration

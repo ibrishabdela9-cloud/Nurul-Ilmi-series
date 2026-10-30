@@ -1,0 +1,2 @@
+export PGPASSWORD="your_database_password"
+pg_dump -h db.your-supabase-host.co -U postgres -d postgres -F c -b -v -f "backups/nurul_ilmi_$(date +%Y%m%d_%H%M%S).dump"

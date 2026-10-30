@@ -1,0 +1,6 @@
+{
+  "name": "Nurul Ilmi Desktop - Islamic Institutional Suite",
+  "description": "Integrated Qur’an Memorization (Hifz), Islamic Studies, and Financial Architecture desktop management suite calibrated for Addis Ababa, Ethiopia (EAT/ETB).",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
