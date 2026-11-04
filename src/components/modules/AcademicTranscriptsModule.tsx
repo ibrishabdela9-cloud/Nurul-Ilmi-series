@@ -87,7 +87,7 @@ export const AcademicTranscriptsModule: React.FC<AcademicTranscriptsModuleProps>
       averagePercentage,
       gpaLetter,
       conductEvaluation: conduct,
-      ustadhSignoff: 'Dr. Sheikh Zakaria Ababor (Mudir)',
+      ustadhSignoff: 'Al-Sheikh Khadir Hamza (Head Mudir)',
     };
 
     onAddAssessment(newAssessment);
@@ -312,19 +312,29 @@ export const AcademicTranscriptsModule: React.FC<AcademicTranscriptsModuleProps>
 
             {/* Official Academic Dossier Sheet */}
             <div className="print-surface bg-white text-slate-900 rounded-xl p-6 border-2 border-amber-600/60 shadow-xl space-y-4 text-xs font-sans">
-              {/* Header with Emblems */}
-              <div className="text-center border-b-2 border-emerald-900 pb-3 space-y-1">
-                <div className="font-arabic text-xl font-bold text-emerald-900">
-                  معهد نور العلم لتحفيظ القرآن الكريم والعلوم الشرعية
+              {/* Header with Official Al-Furqan Crest */}
+              <div className="flex items-center justify-between border-b-2 border-emerald-900 pb-3 gap-3">
+                <img
+                  src="/assets/aistudio/image_9f3d5314.png"
+                  alt="Al-Furqan Emblem"
+                  className="w-16 h-16 rounded-full border-2 border-emerald-800 object-contain shrink-0"
+                />
+                <div className="text-center flex-1 space-y-0.5">
+                  <div className="font-arabic text-base font-bold text-emerald-900">
+                    مركز الفرقان لتحفيظ القرآن الكريم و العلوم الشرعية
+                  </div>
+                  <div className="font-extrabold text-xs text-[#17365D] tracking-wider uppercase">
+                    AL-FURQAN QURAN MEMORIZATION CENTER & ISLAMIC STUDIES INSTITUTE
+                  </div>
+                  <div className="font-bold text-[10px] text-amber-800 uppercase">
+                    GIDDU-GALA HIFZII QUR'AANAA AL-FURQAAN FI BEEKKUMSA SHARI’AA AL-FURQAAN
+                  </div>
+                  <div className="text-[9px] text-slate-500">
+                    Ethiopia, Eastern Oromia, Chiro Town · EAT (UTC+3) · Official Academic Transcript
+                  </div>
                 </div>
-                <div className="font-bold text-sm text-slate-900 tracking-wider uppercase">
-                  Nurul Ilmi Integrated Qur’an & Islamic Studies Institute
-                </div>
-                <div className="font-ethiopic font-semibold text-xs text-amber-900">
-                  የኑሩል ዒልሚ የቁርኣን ሒፍዝና የኢስላማዊ ጥናት ማዕከል · አዲስ አበባ
-                </div>
-                <div className="text-[10px] text-slate-600">
-                  Addis Ababa, Ethiopia · EAT (UTC+3) · Official Academic Transcript
+                <div className="w-16 text-right text-[9px] font-mono text-slate-500">
+                  REF-AFQ
                 </div>
               </div>
 
@@ -418,17 +428,21 @@ export const AcademicTranscriptsModule: React.FC<AcademicTranscriptsModuleProps>
                     <div className="text-slate-500">Signature: __________________________</div>
                   </div>
                   <div>
-                    <div className="font-semibold text-slate-800">Mudir & Head Sheikh: Dr. Sheikh Zakaria Ababor</div>
+                    <div className="font-semibold text-slate-800">Head Mudir & Principal: Al-Sheikh Khadir Hamza</div>
                     <div className="text-slate-500">Signature: __________________________</div>
                   </div>
                 </div>
 
-                {/* Stamped Seal */}
-                <div className="w-28 h-28 rounded-full border-4 border-dashed border-emerald-900 flex flex-col items-center justify-center p-2 text-center text-emerald-950 font-bold select-none rotate-[-6deg]">
-                  <div className="font-arabic text-xs">نور العلم</div>
-                  <div className="text-[8px] uppercase tracking-wider">Official Seal</div>
-                  <div className="text-[7px]">Addis Ababa Campus</div>
-                  <div className="font-ethiopic text-[7px]">የኢንስቲትዩቱ ማህተም</div>
+                {/* Stamped Seal with Official Emblem */}
+                <div className="flex flex-col items-center justify-center">
+                  <div className="w-20 h-20 rounded-full border-2 border-dashed border-emerald-900 p-0.5 flex items-center justify-center bg-white shadow-sm">
+                    <img
+                      src="/assets/aistudio/image_9f3d5314.png"
+                      alt="Al-Furqan Official Seal"
+                      className="w-full h-full object-contain rounded-full"
+                    />
+                  </div>
+                  <span className="text-[8px] font-bold text-emerald-950 uppercase mt-0.5">Official Stamp · Chiro Town</span>
                 </div>
               </div>
             </div>

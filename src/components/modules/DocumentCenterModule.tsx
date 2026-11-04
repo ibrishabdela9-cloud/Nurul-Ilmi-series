@@ -24,11 +24,13 @@ import { AppStoreState, formatEthiopianPhone } from '../../lib/store';
 import { toEthiopianDate } from '../../lib/ethiopian-calendar';
 import { generateStudentDossierPDF, generateInvoicePDF, downloadPDF } from '../../lib/pdf-generator';
 import { generateAndroidUSBPackage, downloadBlob } from '../../lib/android-usb-exporter';
+import { PrintPreviewModal } from '../common/PrintPreviewModal';
 
 export const DocumentCenterModule: React.FC<{ state: AppStoreState }> = ({ state }) => {
   const [docType, setDocType] = useState<'ID_CARD' | 'TRANSCRIPT' | 'RECEIPT'>('RECEIPT');
   const [selectedStudentId, setSelectedStudentId] = useState<string>(state.students[0]?.id || '');
   const [selectedInvoiceId, setSelectedInvoiceId] = useState<string>(state.invoices[0]?.id || '');
+  const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
 
   const student = state.students.find(s => s.id === selectedStudentId);
   const invoice = state.invoices.find(i => i.id === selectedInvoiceId);
@@ -59,12 +61,12 @@ export const DocumentCenterModule: React.FC<{ state: AppStoreState }> = ({ state
         if (!invoice) return;
         const invStudent = state.students.find(s => s.id === invoice.studentId);
         const doc = generateInvoicePDF(invoice, invStudent);
-        downloadPDF(doc, `Nurul_Ilmi_Invoice_${invoice.invoiceNumber}.pdf`);
+        downloadPDF(doc, `AlFurqan_Invoice_${invoice.invoiceNumber}.pdf`);
         setPdfToast(`Official PDF Invoice ${invoice.invoiceNumber} exported successfully!`);
       } else {
         if (!student) return;
         const doc = generateStudentDossierPDF(student, state.assessments, state.hifzRecords);
-        downloadPDF(doc, `Nurul_Ilmi_Academic_Dossier_${student.rollNo}.pdf`);
+        downloadPDF(doc, `AlFurqan_Academic_Dossier_${student.rollNo}.pdf`);
         setPdfToast(`Academic Dossier for ${student.fullNameEnglish} exported successfully!`);
       }
     } catch (err) {
@@ -92,6 +94,15 @@ export const DocumentCenterModule: React.FC<{ state: AppStoreState }> = ({ state
 
         <div className="flex items-center gap-2.5">
           <button
+            onClick={() => setIsPreviewModalOpen(true)}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#17365D] hover:bg-[#102642] text-white font-bold text-xs transition-all shadow-md active:scale-95 border border-[#C49A45]/40"
+            title="Preview official A4 stationery with Al-Furqan seal watermark"
+          >
+            <Printer className="w-4 h-4 text-[#C49A45]" />
+            <span>Official Print Preview (A4)</span>
+          </button>
+
+          <button
             onClick={handleExportPdf}
             disabled={isExportingPdf}
             className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white font-bold text-xs transition-all shadow-md shadow-emerald-950 active:scale-95 disabled:opacity-50"
@@ -99,15 +110,6 @@ export const DocumentCenterModule: React.FC<{ state: AppStoreState }> = ({ state
           >
             <Download className="w-4 h-4 animate-bounce" />
             <span>{isExportingPdf ? 'Generating PDF...' : 'Download PDF (jsPDF)'}</span>
-          </button>
-
-          <button
-            onClick={() => window.print()}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs transition-all border border-slate-700"
-            title="Direct Browser Print Layout"
-          >
-            <Printer className="w-4 h-4" />
-            <span>Print Layout</span>
           </button>
         </div>
       </div>
@@ -199,24 +201,31 @@ export const DocumentCenterModule: React.FC<{ state: AppStoreState }> = ({ state
       <div className="flex justify-center p-4">
         {docType === 'RECEIPT' && invoice && (
           <div className="print-surface bg-white text-slate-900 w-full max-w-2xl rounded-2xl p-8 border-2 border-emerald-900 shadow-2xl space-y-5 text-xs font-sans">
-            {/* Header with Institutional Branding */}
-            <div className="flex items-start justify-between border-b-2 border-emerald-900 pb-4">
-              <div className="space-y-1">
-                <div className="font-arabic text-2xl font-bold text-emerald-950">
-                  نور العلم لتحفيظ القرآن الكريم والعلوم الشرعية
-                </div>
-                <div className="font-bold text-sm text-slate-900 uppercase tracking-wider">
-                  Nurul Ilmi Integrated Institutional Center
-                </div>
-                <div className="font-ethiopic font-semibold text-xs text-amber-900">
-                  የኑሩል ዒልሚ የቁርኣን ሒፍዝና የኢስላማዊ ጥናት ማዕከል · አዲስ አበባ
-                </div>
-                <div className="text-[10px] text-slate-600">
-                  Addis Ababa, Ethiopia · EAT UTC+3 · Official Stamped Cash Receipt
+            {/* Header with Institutional Branding & Official Logo */}
+            <div className="flex items-start justify-between border-b-2 border-[#17365D] pb-4 gap-4">
+              <div className="flex items-center gap-3">
+                <img
+                  src="/assets/aistudio/image_9f3d5314.png"
+                  alt="Al-Furqan Crest"
+                  className="w-16 h-16 rounded-full object-contain border border-[#16836B] p-0.5 shrink-0"
+                />
+                <div className="space-y-0.5">
+                  <div className="font-arabic text-base font-bold text-[#16836B]">
+                    مركز الفرقان لتحفيظ القرآن الكريم و العلوم الشرعية
+                  </div>
+                  <div className="font-extrabold text-xs text-[#17365D] uppercase tracking-tight">
+                    AL-FURQAN QURAN MEMORIZATION CENTER & ISLAMIC STUDIES INSTITUTE
+                  </div>
+                  <div className="font-bold text-[10px] text-[#C49A45] uppercase tracking-tight">
+                    GIDDU-GALA HIFZII QUR'AANAA AL-FURQAAN FI BEEKKUMSA SHARI’AA AL-FURQAAN
+                  </div>
+                  <div className="text-[9px] text-slate-500 font-medium">
+                    Chiro (Ciroo) · West Hararghe / Oromia · Addis Ababa · Ethiopia · Official Stamped Cash Receipt
+                  </div>
                 </div>
               </div>
-              <div className="text-right space-y-1">
-                <div className="font-mono font-extrabold text-base text-emerald-900">
+              <div className="text-right space-y-1 shrink-0">
+                <div className="font-mono font-extrabold text-base text-[#17365D]">
                   {invoice.officialReceiptNumber || 'RCP-ET-9941'}
                 </div>
                 <div className="text-[10px] text-slate-600">
@@ -265,30 +274,35 @@ export const DocumentCenterModule: React.FC<{ state: AppStoreState }> = ({ state
                 </div>
               </div>
 
-              <div className="w-28 h-28 rounded-full border-4 border-dashed border-emerald-900 flex flex-col items-center justify-center p-2 text-center text-emerald-950 font-bold select-none rotate-[-6deg]">
-                <div className="font-arabic text-xs">نور العلم</div>
-                <div className="text-[8px] uppercase tracking-wider">OFFICIAL RECEIPT</div>
-                <div className="text-[7px]">Addis Ababa Campus</div>
-                <div className="font-ethiopic text-[7px]">ክፍያ ተፈጽሟል</div>
+              <div className="w-28 h-28 rounded-full border-2 border-dashed border-[#16836B] p-0.5 flex flex-col items-center justify-center bg-white shadow-sm select-none rotate-[-4deg]">
+                <img
+                  src="/assets/aistudio/image_9f3d5314.png"
+                  alt="Al-Furqan Official Stamp"
+                  className="w-full h-full object-contain rounded-full"
+                />
               </div>
             </div>
           </div>
         )}
 
         {docType === 'ID_CARD' && student && (
-          <div className="print-surface bg-gradient-to-br from-emerald-950 via-slate-900 to-teal-950 border-2 border-amber-500/80 rounded-2xl p-6 text-white max-w-md w-full shadow-2xl relative overflow-hidden space-y-4">
-            <div className="flex items-center justify-between border-b border-emerald-800/80 pb-3">
-              <div className="flex items-center gap-2">
-                <div className="w-9 h-9 rounded-lg bg-amber-400 text-slate-950 font-bold flex items-center justify-center font-arabic text-xl">
-                  ن
-                </div>
+          <div className="print-surface bg-gradient-to-br from-[#17365D] via-[#102642] to-[#16836B] border-2 border-[#C49A45] rounded-2xl p-6 text-white max-w-md w-full shadow-2xl relative overflow-hidden space-y-4">
+            <div className="flex items-center justify-between border-b border-white/20 pb-3">
+              <div className="flex items-center gap-2.5">
+                <img
+                  src="/assets/aistudio/image_9f3d5314.png"
+                  alt="Al-Furqan Logo"
+                  className="w-10 h-10 rounded-full object-contain bg-white border border-[#C49A45] p-0.5"
+                />
                 <div>
-                  <div className="font-bold text-xs tracking-wider text-amber-300 uppercase">Nurul Ilmi Series</div>
-                  <div className="text-[10px] text-slate-300">Addis Ababa Main Campus, Ethiopia</div>
+                  <div className="font-extrabold text-xs tracking-tight text-[#C49A45] uppercase">
+                    AL-FURQAN CENTER & INSTITUTE
+                  </div>
+                  <div className="text-[10px] text-slate-200">Chiro & Addis Ababa · Ethiopia</div>
                 </div>
               </div>
               <div className="text-right">
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-900 border border-emerald-700 text-emerald-200">
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-white/20 border border-white/30 text-white font-bold">
                   ID: {student.rollNo}
                 </span>
               </div>
@@ -329,16 +343,23 @@ export const DocumentCenterModule: React.FC<{ state: AppStoreState }> = ({ state
         )}
 
         {docType === 'TRANSCRIPT' && student && (
-          <div className="print-surface bg-white text-slate-900 w-full max-w-2xl rounded-2xl p-8 border-2 border-amber-600/60 shadow-2xl space-y-4 text-xs font-sans">
-            <div className="text-center border-b-2 border-emerald-900 pb-3 space-y-1">
-              <div className="font-arabic text-xl font-bold text-emerald-900">
-                معهد نور العلم لتحفيظ القرآن الكريم والعلوم الشرعية
-              </div>
-              <div className="font-bold text-sm text-slate-900 uppercase">
-                Nurul Ilmi Integrated Institutional Center · Academic Transcript
-              </div>
-              <div className="font-ethiopic text-amber-900 text-xs font-semibold">
-                የኑሩል ዒልሚ የቁርኣን ሒፍዝና የኢስላማዊ ጥናት ማዕከል
+          <div className="print-surface bg-white text-slate-900 w-full max-w-2xl rounded-2xl p-8 border-2 border-slate-300 shadow-2xl space-y-4 text-xs font-sans">
+            <div className="flex items-center justify-center gap-4 border-b-2 border-[#17365D] pb-3 text-center">
+              <img
+                src="/assets/aistudio/image_9f3d5314.png"
+                alt="Al-Furqan Crest"
+                className="w-16 h-16 rounded-full object-contain border border-[#16836B] p-0.5 shrink-0"
+              />
+              <div className="space-y-0.5 text-center flex-1">
+                <div className="font-arabic text-base font-bold text-[#16836B]">
+                  مركز الفرقان لتحفيظ القرآن الكريم و العلوم الشرعية
+                </div>
+                <div className="font-extrabold text-xs text-[#17365D] uppercase tracking-tight">
+                  AL-FURQAN QURAN MEMORIZATION CENTER & ISLAMIC STUDIES INSTITUTE
+                </div>
+                <div className="font-bold text-[10px] text-[#C49A45] uppercase tracking-tight">
+                  GIDDU-GALA HIFZII QUR'AANAA AL-FURQAAN FI BEEKKUMSA SHARI’AA AL-FURQAAN
+                </div>
               </div>
             </div>
 
@@ -392,10 +413,15 @@ export const DocumentCenterModule: React.FC<{ state: AppStoreState }> = ({ state
                 <div className="font-semibold text-slate-800">Lead Ustadh: Ustadh Hassen Taha</div>
                 <div className="text-slate-500">Signature: __________________________</div>
               </div>
-              <div className="w-24 h-24 rounded-full border-4 border-dashed border-emerald-900 flex flex-col items-center justify-center p-1 text-center text-emerald-950 font-bold select-none rotate-[-6deg]">
-                <div className="font-arabic text-[10px]">نور العلم</div>
-                <div className="text-[7px] uppercase">Official Seal</div>
-                <div className="font-ethiopic text-[6px]">የኢንስቲትዩቱ ማህተም</div>
+              <div className="flex flex-col items-center justify-center">
+                <div className="w-20 h-20 rounded-full border-2 border-dashed border-emerald-900 p-0.5 flex items-center justify-center bg-white shadow-sm">
+                  <img
+                    src="/assets/aistudio/image_9f3d5314.png"
+                    alt="Al-Furqan Official Seal"
+                    className="w-full h-full object-contain rounded-full"
+                  />
+                </div>
+                <span className="text-[8px] font-bold text-emerald-950 uppercase mt-0.5">Official Stamp · Chiro Town</span>
               </div>
             </div>
           </div>
@@ -444,6 +470,19 @@ export const DocumentCenterModule: React.FC<{ state: AppStoreState }> = ({ state
           </div>
         </div>
       </div>
+
+      {/* Official Stationery Print Preview Modal */}
+      {isPreviewModalOpen && (
+        <PrintPreviewModal
+          isOpen={true}
+          onClose={() => setIsPreviewModalOpen(false)}
+          documentType={docType === 'RECEIPT' ? 'INVOICE' : 'DOSSIER'}
+          student={student}
+          invoice={invoice}
+          assessments={state.assessments}
+          hifzRecords={state.hifzRecords}
+        />
+      )}
     </div>
   );
 };

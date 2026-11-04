@@ -2,9 +2,9 @@
  * @license
  * SPDX-License-Identifier: Apache-2.0
  * 
- * Nurul Ilmi Series (نور العلم) - Desktop Operating System
- * Integrated Qur’an Memorization, Islamic Studies & Financial Architecture
- * Addis Ababa, Ethiopia · EAT (UTC+3) · Ethiopian Birr (ETB)
+ * Al-Furqan Quran & Hadith Academy (أكاديمية الفرقان للقرآن والحديث)
+ * Professional Islamic School Management System
+ * Ethiopia, Eastern Oromia, Chiro Town · EAT (UTC+3) · Ethiopian Birr (ETB)
  */
 
 import React, { useState, useEffect } from 'react';
@@ -32,6 +32,7 @@ import {
   AuditLogEntry,
   PaymentMethod,
 } from './types';
+import { SupportedLanguage } from './lib/i18n';
 
 // Desktop Shell Components
 import { DesktopHeader } from './components/desktop/DesktopHeader';
@@ -39,26 +40,32 @@ import { DesktopSidebar } from './components/desktop/DesktopSidebar';
 import { CommandPalette } from './components/desktop/CommandPalette';
 import { OfflineIndicator } from './components/desktop/PWAInstallButton';
 
-// Institutional Modules
+// 14 Core Institutional Modules
 import { DashboardModule } from './components/modules/DashboardModule';
+import { StudentsModule } from './components/modules/StudentsModule';
+import { FacultyHrModule } from './components/modules/FacultyHrModule';
+import { ClassesSectionsModule } from './components/modules/ClassesSectionsModule';
+import { AttendanceModule } from './components/modules/AttendanceModule';
+import { AcademicTranscriptsModule } from './components/modules/AcademicTranscriptsModule';
 import { PrayerEngineModule } from './components/modules/PrayerEngineModule';
 import { HifzTrackerModule } from './components/modules/HifzTrackerModule';
-import { StudentsModule } from './components/modules/StudentsModule';
-import { CsvImporterModule } from './components/modules/CsvImporterModule';
-import { AcademicTranscriptsModule } from './components/modules/AcademicTranscriptsModule';
-import { AttendanceModule } from './components/modules/AttendanceModule';
-import { FeesInvoicingModule } from './components/modules/FeesInvoicingModule';
+import { ExaminationsModule } from './components/modules/ExaminationsModule';
 import { CashbookModule } from './components/modules/CashbookModule';
+import { ParentsModule } from './components/modules/ParentsModule';
+import { NoticesModule } from './components/modules/NoticesModule';
+import { DocumentCenterModule } from './components/modules/DocumentCenterModule';
+import { SettingsModule } from './components/modules/SettingsModule';
+
+// Supplementary Institutional Extensions
+import { FeesInvoicingModule } from './components/modules/FeesInvoicingModule';
+import { CsvImporterModule } from './components/modules/CsvImporterModule';
 import { BudgetManagementModule } from './components/modules/BudgetManagementModule';
 import { BenefactorsModule } from './components/modules/BenefactorsModule';
 import { CharityFundsModule } from './components/modules/CharityFundsModule';
 import { ZakatCalculatorModule } from './components/modules/ZakatCalculatorModule';
-import { FacultyHrModule } from './components/modules/FacultyHrModule';
 import { InventoryModule } from './components/modules/InventoryModule';
 import { StrategicKpisModule } from './components/modules/StrategicKpisModule';
 import { ShuraGovernanceModule } from './components/modules/ShuraGovernanceModule';
-import { NoticesModule } from './components/modules/NoticesModule';
-import { DocumentCenterModule } from './components/modules/DocumentCenterModule';
 import { GoogleWorkspaceModule } from './components/modules/GoogleWorkspaceModule';
 import { EthiopianCalendarModule } from './components/modules/EthiopianCalendarModule';
 import { AiAssistantModule } from './components/modules/AiAssistantModule';
@@ -69,14 +76,51 @@ export default function App() {
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
+  // SaaS Navigation & Preferences State
+  const [currentLanguage, setCurrentLanguage] = useState<SupportedLanguage>(() => {
+    return (localStorage.getItem('alfurqan_lang') as SupportedLanguage) || 'en';
+  });
+  const [academicYear, setAcademicYear] = useState<string>(() => {
+    return localStorage.getItem('alfurqan_year') || '2026/2027 (2019 E.C.)';
+  });
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+
   // Synchronize state changes to localStorage
   useEffect(() => {
     saveStateToStorage(state);
   }, [state]);
 
+  // Synchronize language and text direction (RTL for Arabic)
+  useEffect(() => {
+    localStorage.setItem('alfurqan_lang', currentLanguage);
+    const html = document.documentElement;
+    html.lang = currentLanguage;
+    if (currentLanguage === 'ar') {
+      html.dir = 'rtl';
+    } else {
+      html.dir = 'ltr';
+    }
+  }, [currentLanguage]);
+
+  // Synchronize academic year
+  useEffect(() => {
+    localStorage.setItem('alfurqan_year', academicYear);
+  }, [academicYear]);
+
   const showToast = (msg: string) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 3000);
+  };
+
+  const handleLanguageChange = (lang: SupportedLanguage) => {
+    setCurrentLanguage(lang);
+    showToast(`Interface language switched to ${lang.toUpperCase()}`);
+  };
+
+  const handleAcademicYearChange = (year: string) => {
+    setAcademicYear(year);
+    showToast(`Active Academic Year updated to ${year}`);
   };
 
   const logAudit = (actor: string, action: string, module: string, details: string, severity: 'INFO' | 'WARN' | 'CRITICAL' = 'INFO') => {
@@ -97,6 +141,7 @@ export default function App() {
 
   const handleNavigate = (module: DesktopNavModule) => {
     setState(prev => ({ ...prev, activeModule: module }));
+    setIsMobileSidebarOpen(false); // Close mobile drawer upon navigation
   };
 
   const handleToggleMaximize = () => {
@@ -110,7 +155,7 @@ export default function App() {
       students: [student, ...prev.students],
     }));
     logAudit('Administrator', 'STUDENT_ENROLLED', 'ADMISSIONS', `Enrolled ${student.fullNameEnglish} (${student.rollNo}) in ${student.hifzLevel}`);
-    showToast(`Student ${student.fullNameEnglish} successfully enrolled!`);
+    showToast(`Student ${student.fullNameEnglish} successfully enrolled in Al-Furqan!`);
   };
 
   const handleUpdateStudent = (updatedStudent: Student) => {
@@ -164,7 +209,7 @@ export default function App() {
       ...prev,
       assessments: [assessment, ...prev.assessments],
     }));
-    logAudit('Mudir / Lead Ustadh', 'ASSESSMENT_RECORDED', 'ACADEMICS', `Recorded ${assessment.term} dossier for student ${assessment.studentId} with GPA: ${assessment.gpaLetter}`);
+    logAudit('Head Mudir', 'ASSESSMENT_RECORDED', 'ACADEMICS', `Recorded ${assessment.term} dossier for student ${assessment.studentId} with GPA: ${assessment.gpaLetter}`);
     showToast('Academic Dossier saved and ready for printing.');
   };
 
@@ -217,7 +262,6 @@ export default function App() {
   // Cashbook & General Ledger
   const handleAddVoucher = (voucher: CashbookVoucher) => {
     setState(prev => {
-      // Atomic balance update on target account
       const updatedAccounts = prev.accounts.map(acc => {
         if (acc.id === voucher.accountId) {
           const delta = voucher.type === 'INCOME' ? voucher.amountETB : voucher.type === 'EXPENSE' ? -voucher.amountETB : 0;
@@ -239,100 +283,56 @@ export default function App() {
     showToast(`Voucher ${voucher.voucherNumber} posted to General Ledger.`);
   };
 
-  // Department Budgets
+  // Additional state handlers
   const handleAddBudget = (b: DepartmentBudget) => {
-    setState(prev => ({
-      ...prev,
-      budgets: [...prev.budgets, b],
-    }));
-    logAudit('Financial Comptroller', 'BUDGET_ALLOCATED', 'BUDGETS', `Allocated ${b.allocatedETB.toLocaleString()} ETB to ${b.department}`);
+    setState(prev => ({ ...prev, budgets: [...prev.budgets, b] }));
     showToast(`Budget for ${b.department} allocated.`);
   };
 
-  // Benefactors & Donors
   const handleAddBenefactor = (b: Benefactor) => {
-    setState(prev => ({
-      ...prev,
-      benefactors: [b, ...prev.benefactors],
-    }));
-    logAudit('Administrator', 'BENEFACTOR_REGISTERED', 'DONORS', `Registered benefactor ${b.name} (${b.tier})`);
-    showToast(`Benefactor ${b.name} added to portfolio.`);
+    setState(prev => ({ ...prev, benefactors: [b, ...prev.benefactors] }));
+    showToast(`Benefactor ${b.name} registered.`);
   };
 
-  // Orphan Sponsorships
   const handleAddOrphanSponsorship = (s: OrphanSponsorship) => {
     setState(prev => ({
       ...prev,
       orphanSponsorships: [s, ...prev.orphanSponsorships],
       students: prev.students.map(st => st.id === s.studentId ? { ...st, isOrphanSponsored: true } : st),
     }));
-    logAudit('Welfare Trustee', 'ORPHAN_SPONSORED', 'CHARITY', `Activated full sponsorship for student ${s.studentId} (${s.monthlyAllocationETB.toLocaleString()} ETB/mo)`);
     showToast('Orphan Hifz Sponsorship activated!');
   };
 
-  // Faculty HR
   const handleAddFaculty = (f: FacultyMember) => {
-    setState(prev => ({
-      ...prev,
-      faculty: [...prev.faculty, f],
-    }));
-    logAudit('Mudir Office', 'FACULTY_APPOINTED', 'HR', `Appointed ${f.name} as ${f.role}`);
+    setState(prev => ({ ...prev, faculty: [...prev.faculty, f] }));
     showToast(`Faculty member ${f.name} appointed.`);
   };
 
-  // Inventory & Asset Control
   const handleUpdateInventoryQty = (id: string, delta: number) => {
     setState(prev => ({
       ...prev,
-      inventory: prev.inventory.map(item => {
-        if (item.id === id) {
-          return {
-            ...item,
-            quantityInStock: Math.max(0, item.quantityInStock + delta),
-          };
-        }
-        return item;
-      }),
+      inventory: prev.inventory.map(item => item.id === id ? { ...item, quantityInStock: Math.max(0, item.quantityInStock + delta) } : item),
     }));
   };
 
   const handleAddInventoryItem = (item: InventoryItem) => {
-    setState(prev => ({
-      ...prev,
-      inventory: [...prev.inventory, item],
-    }));
-    logAudit('Asset Comptroller', 'ASSET_PROCURED', 'INVENTORY', `Added ${item.itemName} (${item.quantityInStock} units)`);
+    setState(prev => ({ ...prev, inventory: [...prev.inventory, item] }));
     showToast(`Asset item ${item.itemName} logged in stock.`);
   };
 
-  // Strategic KPIs
   const handleAddKPI = (kpi: StrategicKPI) => {
-    setState(prev => ({
-      ...prev,
-      kpis: [...prev.kpis, kpi],
-    }));
-    logAudit('Strategic Committee', 'KPI_DEFINED', 'STRATEGY', `Created KPI: ${kpi.title}`);
+    setState(prev => ({ ...prev, kpis: [...prev.kpis, kpi] }));
     showToast('Strategic objective registered.');
   };
 
-  // Shura Council
   const handleAddShuraMeeting = (m: ShuraMeeting) => {
-    setState(prev => ({
-      ...prev,
-      shuraMeetings: [m, ...prev.shuraMeetings],
-    }));
-    logAudit('Shura Secretary', 'SHURA_MINUTES_RATIFIED', 'GOVERNANCE', `Ratified assembly minutes for ${m.title}`);
+    setState(prev => ({ ...prev, shuraMeetings: [m, ...prev.shuraMeetings] }));
     showToast('Shura assembly minutes published.');
   };
 
-  // Administrative Notices
   const handleAddNotice = (n: AdministrativeNotice) => {
-    setState(prev => ({
-      ...prev,
-      notices: [n, ...prev.notices],
-    }));
-    logAudit('Administrative Office', 'NOTICE_PUBLISHED', 'CIRCULARS', `Published circular: ${n.titleEnglish}`);
-    showToast('Notice posted to institutional bulletin.');
+    setState(prev => ({ ...prev, notices: [n, ...prev.notices] }));
+    showToast('Circular posted to bulletin.');
   };
 
   const handleSelectStudent = (id: string) => {
@@ -350,16 +350,6 @@ export default function App() {
             onSelectStudent={handleSelectStudent}
           />
         );
-      case 'prayer_engine':
-        return <PrayerEngineModule />;
-      case 'hifz_tracker':
-        return (
-          <HifzTrackerModule
-            state={state}
-            onAddHifzRecord={handleAddHifzRecord}
-            onUpdateStudentProgress={handleUpdateStudentProgress}
-          />
-        );
       case 'students':
         return (
           <StudentsModule
@@ -370,12 +360,20 @@ export default function App() {
             onSelectStudent={handleSelectStudent}
           />
         );
-      case 'bulk_csv':
+      case 'faculty_hr':
         return (
-          <CsvImporterModule
+          <FacultyHrModule
             state={state}
-            onBulkAddStudents={handleBulkAddStudents}
-            onNavigate={handleNavigate}
+            onAddFaculty={handleAddFaculty}
+          />
+        );
+      case 'classes_sections':
+        return <ClassesSectionsModule state={state} />;
+      case 'attendance':
+        return (
+          <AttendanceModule
+            state={state}
+            onSaveAttendanceBatch={handleSaveAttendanceBatch}
           />
         );
       case 'academic_transcripts':
@@ -386,11 +384,23 @@ export default function App() {
             onNavigate={handleNavigate}
           />
         );
-      case 'attendance':
+      case 'prayer_engine':
+        return <PrayerEngineModule />;
+      case 'hifz_tracker':
         return (
-          <AttendanceModule
+          <HifzTrackerModule
             state={state}
-            onSaveAttendanceBatch={handleSaveAttendanceBatch}
+            onAddHifzRecord={handleAddHifzRecord}
+            onUpdateStudentProgress={handleUpdateStudentProgress}
+          />
+        );
+      case 'examinations':
+        return <ExaminationsModule state={state} />;
+      case 'cashbook':
+        return (
+          <CashbookModule
+            state={state}
+            onAddVoucher={handleAddVoucher}
           />
         );
       case 'fees_invoicing':
@@ -402,11 +412,34 @@ export default function App() {
             onAddVoucher={handleAddVoucher}
           />
         );
-      case 'cashbook':
+      case 'parents':
+        return <ParentsModule state={state} />;
+      case 'circulars_notices':
         return (
-          <CashbookModule
+          <NoticesModule
             state={state}
-            onAddVoucher={handleAddVoucher}
+            onAddNotice={handleAddNotice}
+          />
+        );
+      case 'document_center':
+        return <DocumentCenterModule state={state} />;
+      case 'settings':
+        return (
+          <SettingsModule
+            state={state}
+            currentLanguage={currentLanguage}
+            onLanguageChange={handleLanguageChange}
+            academicYear={academicYear}
+            onAcademicYearChange={handleAcademicYearChange}
+            onShowToast={showToast}
+          />
+        );
+      case 'bulk_csv':
+        return (
+          <CsvImporterModule
+            state={state}
+            onBulkAddStudents={handleBulkAddStudents}
+            onNavigate={handleNavigate}
           />
         );
       case 'budgets':
@@ -439,13 +472,6 @@ export default function App() {
             onNavigate={handleNavigate}
           />
         );
-      case 'faculty_hr':
-        return (
-          <FacultyHrModule
-            state={state}
-            onAddFaculty={handleAddFaculty}
-          />
-        );
       case 'inventory':
         return (
           <InventoryModule
@@ -468,15 +494,6 @@ export default function App() {
             onAddShuraMeeting={handleAddShuraMeeting}
           />
         );
-      case 'circulars_notices':
-        return (
-          <NoticesModule
-            state={state}
-            onAddNotice={handleAddNotice}
-          />
-        );
-      case 'document_center':
-        return <DocumentCenterModule state={state} />;
       case 'google_workspace':
         return <GoogleWorkspaceModule state={state} onShowToast={showToast} />;
       case 'ethiopian_calendar':
@@ -497,35 +514,61 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans select-none antialiased">
-      {/* Native Desktop Window Header */}
+    <div className="min-h-screen bg-[#F5F7FA] text-[#273449] flex flex-col font-sans select-none antialiased">
+      {/* Top Navigation Bar */}
       <DesktopHeader
         activeModule={state.activeModule}
         onNavigate={handleNavigate}
         onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
         isMaximized={state.activeWindowMaximized}
         onToggleMaximize={handleToggleMaximize}
+        currentLanguage={currentLanguage}
+        onLanguageChange={handleLanguageChange}
+        academicYear={academicYear}
+        onAcademicYearChange={handleAcademicYearChange}
+        onToggleSidebarMobile={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
       />
 
-      {/* Main Desktop Workstation Body */}
-      <div className={`flex-1 flex overflow-hidden ${state.activeWindowMaximized ? 'p-0' : 'p-2 sm:p-3'}`}>
-        <div
-          className={`flex-1 flex bg-slate-950/95 border border-emerald-900/40 shadow-2xl shadow-black/80 ring-1 ring-emerald-500/10 overflow-hidden ${
-            state.activeWindowMaximized ? 'rounded-none' : 'rounded-2xl'
-          }`}
-        >
-          {/* Categorized Multi-Module Navigation Board */}
+      {/* Main SaaS Workspace */}
+      <div className="flex-1 flex overflow-hidden">
+        {/* Desktop Sidebar (Collapsible) */}
+        <div className="hidden lg:flex">
           <DesktopSidebar
             activeModule={state.activeModule}
             onNavigate={handleNavigate}
             state={state}
+            currentLanguage={currentLanguage}
+            isCollapsed={isSidebarCollapsed}
+            onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
           />
-
-          {/* Module Primary Canvas Board */}
-          <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-gradient-to-b from-[#02140f] via-slate-950 to-[#020b08]">
-            {renderModule()}
-          </main>
         </div>
+
+        {/* Mobile Drawer Sidebar */}
+        {isMobileSidebarOpen && (
+          <div className="fixed inset-0 z-50 lg:hidden flex">
+            <div
+              className="fixed inset-0 bg-black/50 backdrop-blur-xs"
+              onClick={() => setIsMobileSidebarOpen(false)}
+            />
+            <div className="relative z-10 w-72 h-full bg-white shadow-2xl flex flex-col">
+              <DesktopSidebar
+                activeModule={state.activeModule}
+                onNavigate={handleNavigate}
+                state={state}
+                currentLanguage={currentLanguage}
+                isCollapsed={false}
+                onToggleCollapse={() => setIsMobileSidebarOpen(false)}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Module Canvas */}
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-[#F5F7FA]">
+          <div className="max-w-7xl mx-auto">
+            {renderModule()}
+          </div>
+        </main>
       </div>
 
       {/* Global Command Palette */}
@@ -539,8 +582,8 @@ export default function App() {
 
       {/* Toast Notification Alert */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 bg-emerald-950 border border-emerald-600 text-emerald-200 px-4 py-2.5 rounded-xl shadow-2xl text-xs font-semibold flex items-center gap-2 animate-in slide-in-from-bottom-3 duration-200">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+        <div className="fixed bottom-6 right-6 z-50 bg-[#17365D] text-white px-4 py-2.5 rounded-xl shadow-2xl text-xs font-semibold flex items-center gap-2 border border-[#C49A45]/40 animate-in slide-in-from-bottom-3 duration-200">
+          <span className="w-2 h-2 rounded-full bg-[#16836B] animate-ping" />
           <span>{toastMessage}</span>
         </div>
       )}

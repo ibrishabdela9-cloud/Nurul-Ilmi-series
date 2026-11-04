@@ -48,12 +48,12 @@ function drawOfficialHeader(
 
   doc.setFontSize(14);
   doc.setTextColor(255, 255, 255);
-  doc.text('NURUL ILMI ISLAMIC INSTITUTION (نور العلم)', pageWidth / 2, 16, { align: 'center' });
+  doc.text('AL-FURQAN QURAN & HADITH ACADEMY (أكاديمية الفرقان)', pageWidth / 2, 16, { align: 'center' });
 
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(8);
   doc.setTextColor(167, 243, 208);
-  doc.text('Hifz Academy, Islamic Studies & Financial Architecture · Addis Ababa, Ethiopia (EAT UTC+3)', pageWidth / 2, 22, { align: 'center' });
+  doc.text('Qur’an Memorization, Prophetic Hadith & Academic Sciences · Ethiopia, Eastern Oromia, Chiro Town', pageWidth / 2, 22, { align: 'center' });
 
   // Document Title Ribbon
   doc.setFillColor(...COLOR_SLATE_BG);
@@ -113,7 +113,7 @@ function drawOfficialStamp(
   doc.setTextColor(...COLOR_EMERALD_DARK);
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(5);
-  doc.text('NURUL ILMI ADDIS ABABA', centerX, centerY - 6, { align: 'center' });
+  doc.text('AL-FURQAN CHIRO TOWN', centerX, centerY - 6, { align: 'center' });
 
   doc.setFontSize(6.5);
   doc.setTextColor(...COLOR_GOLD);
@@ -355,13 +355,13 @@ export function generateStudentDossierPDF(
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(6.5);
   doc.setTextColor(...COLOR_SLATE_MUTED);
-  doc.text('Nurul Ilmi Central Registry Addis Ababa', pageWidth - 41.5, signatureY + 15, { align: 'center' });
+  doc.text('Al-Furqan Central Registry · Chiro Town', pageWidth - 41.5, signatureY + 15, { align: 'center' });
 
   // Bottom Footnote
   doc.setFontSize(6);
   doc.setTextColor(...COLOR_SLATE_MUTED);
   doc.text(
-    'AUTHENTICITY NOTICE: This dossier is an official institutional academic transcript registered with the Nurul Ilmi Central Archive in Addis Ababa, Ethiopia. Any unauthorized erasure or falsification revokes this credential.',
+    'AUTHENTICITY NOTICE: This dossier is an official institutional academic transcript registered with the Al-Furqan Central Archive in Chiro Town, Eastern Oromia, Ethiopia. Any unauthorized erasure or falsification revokes this credential.',
     pageWidth / 2,
     pageHeight - 6,
     { align: 'center' }
@@ -452,7 +452,7 @@ export function generateInvoicePDF(
   const studentName = student ? `${student.fullNameEnglish} (${student.fullNameAmharic})` : 'Registered Student';
   const rollNo = student ? student.rollNo : 'NI-STU';
   const guardianInfo = student ? `${student.guardianName} (${student.guardianRelation}) · Phone: ${student.guardianPhone}` : 'Parent / Authorized Guardian';
-  const subCity = student ? `${student.subCity} Sub-City, Addis Ababa` : 'Addis Ababa Station';
+  const subCity = student ? `${student.subCity}, Chiro Town` : 'Chiro Town Station';
 
   autoTable(doc, {
     startY: currentY,
@@ -466,7 +466,7 @@ export function generateInvoicePDF(
         `Payment Channel: ${invoice.paymentMethod || 'Commercial Bank of Ethiopia (CBE)'}\n` +
         `Transaction Ref: ${invoice.transactionRef || 'ETB-TX-VERIFIED'}\n` +
         `Settlement Date: ${invoice.lastPaymentDate || new Date().toISOString().split('T')[0]}\n` +
-        `Currency: Ethiopian Birr (ETB)  |  Station: Addis Ababa`,
+        `Currency: Ethiopian Birr (ETB)  |  Station: Chiro Town`,
       ],
     ],
     theme: 'grid',
@@ -611,7 +611,7 @@ export function generateInvoicePDF(
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(6.5);
   doc.setTextColor(...COLOR_SLATE_MUTED);
-  doc.text('Finance & Treasury Office Addis Ababa', 41.5, stampY + 17, { align: 'center' });
+  doc.text('Finance & Treasury Office · Chiro Town', 41.5, stampY + 17, { align: 'center' });
 
   // Center: Official Stamp
   drawOfficialStamp(doc, pageWidth / 2, stampY + 6, isPaid ? 'PAID & VERIFIED' : 'BURSAR AUDITED');
@@ -631,7 +631,7 @@ export function generateInvoicePDF(
   doc.setFontSize(6.5);
   doc.setTextColor(...COLOR_SLATE_MUTED);
   doc.text(
-    'SHARIA FINANCIAL POLICY: All tuition dues support the preservation and instruction of the Holy Qur\'an. Receipts are officially audited under the Nurul Ilmi Financial Architecture, Addis Ababa, Ethiopia.',
+    'SHARIA FINANCIAL POLICY: All tuition dues support the preservation and instruction of the Holy Qur\'an. Receipts are officially audited under the Al-Furqan Financial Architecture, Ethiopia, Eastern Oromia, Chiro Town.',
     pageWidth / 2,
     pageHeight - 6,
     { align: 'center' }

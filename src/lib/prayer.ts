@@ -1,7 +1,7 @@
 /**
- * Solar Astronomical Prayer Engine calibrated for Addis Ababa, Ethiopia
- * Coordinates: Latitude 9.032° N, Longitude 38.747° E, Timezone UTC+3 (East Africa Time)
- * Elevation: ~2,355 meters above sea level
+ * Solar Astronomical Prayer Engine calibrated for Chiro Town, Eastern Oromia, Ethiopia
+ * Coordinates: Latitude 9.083° N, Longitude 40.867° E, Timezone UTC+3 (East Africa Time)
+ * Elevation: ~1,826 meters above sea level
  * Convention: Muslim World League (MWL) with Shafi / Hanafi Asr calculation options
  */
 
@@ -25,15 +25,18 @@ export interface PrayerCalculationConfig {
   asrMethod: 'shafi' | 'hanafi'; // 1 vs 2 shadow multiplier
 }
 
-export const ADDIS_ABABA_CONFIG: PrayerCalculationConfig = {
-  latitude: 9.032,
-  longitude: 38.747,
+export const CHIRO_TOWN_CONFIG: PrayerCalculationConfig = {
+  latitude: 9.0833,
+  longitude: 40.8667,
   timeZoneOffset: 3,
-  elevationMeters: 2355,
+  elevationMeters: 1826,
   fajrAngle: 18,
   ishaAngle: 17,
   asrMethod: 'shafi',
 };
+
+// Backwards-compatibility alias
+export const ADDIS_ABABA_CONFIG = CHIRO_TOWN_CONFIG;
 
 // Ka'bah coordinates in Mecca
 const MECCA_LAT = 21.422487;
@@ -87,7 +90,7 @@ export function calculatePrayerTimes(
   const eot = 9.87 * Math.sin(2 * b) - 7.53 * Math.cos(b) - 1.5 * Math.sin(b); // minutes
   const declination = 23.45 * Math.sin(toRadians((360 / 365) * (dayOfYear - 81))); // degrees
 
-  // Solar Noon in local time (Addis Ababa UTC+3, standard meridian 45° E)
+  // Solar Noon in local time (Chiro Town, Eastern Oromia UTC+3, standard meridian 45° E)
   const standardMeridian = config.timeZoneOffset * 15;
   const longitudeDifference = (standardMeridian - config.longitude) * 4; // minutes
   const solarNoonMinutes = 12 * 60 + longitudeDifference - eot;

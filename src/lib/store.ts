@@ -1,6 +1,6 @@
 /**
- * Reactive Persistent State Store for Nurul Ilmi Series Desktop App
- * Initialized with authentic Addis Ababa institutional seed data.
+ * Reactive Persistent State Store for Al-Furqan Quran & Hadith Academy
+ * Initialized with authentic Chiro Town, Eastern Oromia institutional seed data.
  * Supports auto-persistence to localStorage, atomic ledger balances,
  * and immutable audit logging.
  */
@@ -180,7 +180,7 @@ const INITIAL_STUDENTS: Student[] = [
     guardianName: 'Mohammed Nur',
     guardianPhone: '+251977889900',
     guardianRelation: 'Father',
-    subCity: 'Addis Ketema',
+    subCity: 'Chiro Central',
     emergencyContact: '+251977889900',
     bloodGroup: 'AB+',
     status: 'Active',
@@ -230,8 +230,8 @@ const INITIAL_ACCOUNTS: CashbookAccount[] = [
   },
   {
     id: 'acc-safe',
-    name: 'Main Campus Petty Cash Safe (Addis Ababa)',
-    accountNumber: 'SAFE-AA-01',
+    name: 'Main Campus Petty Cash Safe (Chiro Town)',
+    accountNumber: 'SAFE-CH-01',
     type: 'Cash',
     balanceETB: 58400.0,
     icon: 'Vault',
@@ -420,15 +420,15 @@ const INITIAL_HIFZ_RECORDS: HifzDailyRecord[] = [
 const INITIAL_FACULTY: FacultyMember[] = [
   {
     id: 'fac-001',
-    name: 'Dr. Sheikh Zakaria Ababor',
-    nameAmharic: 'ዶ/ር ሸይኽ ዘከሪያ አባቦር',
-    role: 'Head Sheikh & Mudir',
-    ijazahSanad: '10 Minor and Major Qira\'at via Shatibiyyah and Durrah with unbroken chain to the Messenger of Allah (ﷺ)',
-    qiraatCertifications: ['Hafs \'an \'Asim', 'Warsh \'an Nafi\'', 'Qalun', 'Ad-Duri \'an Abi \'Amr'],
+    name: 'Al-Sheikh Khadir Hamza',
+    nameAmharic: 'አል-ሸይኽ ኻድር ሐምዛ',
+    role: 'Head Mudir & Principal (رئيس المركز)',
+    ijazahSanad: 'Sanad in the 10 Major & Minor Qira\'at, Tajweed & Hadith with unbroken chain of transmission to the Prophet (ﷺ)',
+    qiraatCertifications: ['Hafs \'an \'Asim', 'Warsh \'an Nafi\'', 'Qalun', 'Ad-Duri \'an Abi \'Amr', 'Hamzah', 'Al-Kisa\'i'],
     phone: '+251911203040',
     hireDate: '2018-09-01',
-    monthlySalaryETB: 28000,
-    assignedHalqah: 'Halqah Al-Khatm & Sanad',
+    monthlySalaryETB: 32000,
+    assignedHalqah: 'Halqah Al-Khatm & Sanad / Leadership',
     status: 'Active',
   },
   {
@@ -510,7 +510,7 @@ const INITIAL_BUDGETS: DepartmentBudget[] = [
     allocatedETB: 450000,
     spentETB: 198000,
     remainingETB: 252000,
-    leadUstadh: 'Dr. Sheikh Zakaria Ababor',
+    leadUstadh: 'Al-Sheikh Khadir Hamza',
     color: 'indigo',
   },
 ];
@@ -530,11 +530,11 @@ const INITIAL_BENEFACTORS: Benefactor[] = [
   },
   {
     id: 'bnf-002',
-    name: 'Bilal Traders PLC (Merkato)',
-    type: 'Addis Ababa Merchant',
+    name: 'Bilal Traders PLC (Chiro)',
+    type: 'Chiro Merchant',
     phone: '+251911440022',
     email: 'info@bilaltraders.et',
-    cityCountry: 'Merkato, Addis Ababa',
+    cityCountry: 'Chiro Town, Eastern Oromia',
     totalContributedETB: 180000,
     pledgedAmountETB: 200000,
     lastContributionDate: '2026-09-15',
@@ -546,7 +546,7 @@ const INITIAL_BENEFACTORS: Benefactor[] = [
     type: 'Islamic Foundation',
     phone: '+251920887766',
     email: 'contact@zahrawelfare.org',
-    cityCountry: 'Addis Ababa / Toronto',
+    cityCountry: 'Chiro Town / Toronto',
     totalContributedETB: 240000,
     pledgedAmountETB: 300000,
     lastContributionDate: '2026-10-02',
@@ -603,9 +603,9 @@ const INITIAL_SHURA: ShuraMeeting[] = [
     meetingDate: '2026-10-15',
     ethiopianDateString: 'ጥቅምት ፭ ቀን ፳፻፲፱ ዓ.ም',
     title: 'Q1 Institutional Strategy & Expansion Review',
-    chairperson: 'Dr. Sheikh Zakaria Ababor',
+    chairperson: 'Al-Sheikh Khadir Hamza',
     votingAttendees: [
-      'Dr. Sheikh Zakaria Ababor',
+      'Al-Sheikh Khadir Hamza',
       'Sheikh Dawud Abdo',
       'Ustadh Hassen Taha',
       'Ustadha Halima Kedir',
@@ -688,7 +688,7 @@ const INITIAL_NOTICES: AdministrativeNotice[] = [
     targetAudience: 'All Students & Guardians',
     contentAmharic: 'የተከበራችሁ ወላጆችና ተማሪዎች፡ የ፳፻፲፱ ዓ.ም የ፩ኛው መንፈቀ-ዓመት የታጅዊድና የሒፍዝ የቃል ፈተና ከኅዳር ፩ እስከ ፭ ቀን የሚካሄድ መሆኑን እናሳውቃለን። ዝግጅታችሁን አጠናክሩ።',
     contentEnglish: 'All students are notified that Term 1 Oral Tajweed Makharij and Sabaq Recitation assessments will commence from Hidar 1 to 5. Please ensure daily Manzil revision.',
-    issuedBy: 'Dr. Sheikh Zakaria Ababor (Mudir)',
+    issuedBy: 'Al-Sheikh Khadir Hamza (Head Mudir)',
   },
   {
     id: 'ntc-002',
@@ -707,10 +707,10 @@ const INITIAL_AUDIT_LOGS: AuditLogEntry[] = [
   {
     id: 'log-001',
     timestamp: new Date().toISOString(),
-    actor: 'System Admin (Addis Ababa)',
+    actor: 'System Admin (Chiro Town)',
     action: 'SYSTEM_BOOTSTRAP',
     module: 'CORE_KERNEL',
-    details: 'Initialized Nurul Ilmi Series Desktop Suite with EAT (UTC+3) baseline and Ethiopian Ge\'ez calendar sync.',
+    details: 'Initialized Al-Furqan Quran Memorization Center & Islamic Studies Institute (Chiro Town, Eastern Oromia) with EAT (UTC+3) baseline and Ethiopian Ge\'ez calendar sync.',
     severity: 'INFO',
   },
   {
@@ -731,6 +731,20 @@ export function getInitialState(): AppStoreState {
       const parsed = JSON.parse(raw);
       // Validate schema
       if (parsed.students && parsed.accounts && parsed.vouchers) {
+        // Migrate Head Mudir in cached faculty if needed
+        if (Array.isArray(parsed.faculty)) {
+          parsed.faculty = parsed.faculty.map((f: FacultyMember) => {
+            if (f.id === 'fac-001' || f.role?.toLowerCase().includes('mudir') || f.name?.includes('Zakaria')) {
+              return {
+                ...f,
+                name: 'Al-Sheikh Khadir Hamza',
+                nameAmharic: 'አል-ሸይኽ ኻድር ሐምዛ',
+                role: 'Head Mudir & Principal (رئيس المركز)',
+              };
+            }
+            return f;
+          });
+        }
         return parsed;
       }
     }

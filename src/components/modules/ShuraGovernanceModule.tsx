@@ -31,7 +31,7 @@ export const ShuraGovernanceModule: React.FC<ShuraGovernanceModuleProps> = ({
 }) => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [title, setTitle] = useState('');
-  const [chairperson, setChairperson] = useState('Dr. Sheikh Zakaria Ababor (Mudir)');
+  const [chairperson, setChairperson] = useState('Al-Sheikh Khadir Hamza (Head Mudir)');
   const [agendaText, setAgendaText] = useState('');
   const [resolutionText, setResolutionText] = useState('');
 
@@ -50,7 +50,7 @@ export const ShuraGovernanceModule: React.FC<ShuraGovernanceModuleProps> = ({
       title: title.trim(),
       chairperson: chairperson.trim(),
       votingAttendees: [
-        'Dr. Sheikh Zakaria Ababor',
+        'Al-Sheikh Khadir Hamza',
         'Sheikh Dawud Abdo',
         'Ustadh Hassen Taha',
         'Ustadha Halima Kedir',

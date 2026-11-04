@@ -1,6 +1,6 @@
 /**
- * Core Type Definitions for Nurul Ilmi Series Institutional Management Suite
- * Addis Ababa, Ethiopia · EAT (UTC+3) · Ethiopian Birr (ETB)
+ * Core Type Definitions for Al-Furqan Quran Memorization Center & Islamic Studies Institute
+ * Ethiopia, Eastern Oromia, Chiro Town · EAT (UTC+3) · Ethiopian Birr (ETB)
  */
 
 export type HifzLevel =
@@ -29,7 +29,7 @@ export interface Student {
   guardianName: string;
   guardianPhone: string; // Validated for Ethiopian pattern (+2519..., 09..., etc.)
   guardianRelation: 'Father' | 'Mother' | 'Brother' | 'Uncle' | 'Guardian';
-  subCity: 'Kirkos' | 'Bole' | 'Arada' | 'Yeka' | 'Addis Ketema' | 'Nifas Silk-Lafto' | 'Kolfe Keranio' | 'Gulele' | 'Lideta' | 'Akaky Kaliti';
+  subCity: string;
   emergencyContact: string;
   bloodGroup?: string;
   isOrphanSponsored?: boolean;
@@ -142,7 +142,7 @@ export interface CashbookVoucher {
 export interface Benefactor {
   id: string;
   name: string;
-  type: 'Local Diaspora' | 'Addis Ababa Merchant' | 'Islamic Foundation' | 'Family Trust';
+  type: 'Local Diaspora' | 'Chiro Merchant' | 'Islamic Foundation' | 'Family Trust';
   phone: string;
   email: string;
   cityCountry: string;
@@ -235,6 +235,8 @@ export interface AdministrativeNotice {
   contentAmharic: string;
   contentEnglish: string;
   issuedBy: string;
+  imageUrl?: string;
+  imageCaption?: string;
 }
 
 export interface AuditLogEntry {
@@ -249,25 +251,31 @@ export interface AuditLogEntry {
 
 export type DesktopNavModule =
   | 'dashboard'
+  | 'students'
+  | 'faculty_hr'
+  | 'classes_sections'
+  | 'attendance'
+  | 'academic_transcripts'
   | 'prayer_engine'
   | 'hifz_tracker'
-  | 'students'
-  | 'bulk_csv'
-  | 'academic_transcripts'
-  | 'attendance'
+  | 'examinations'
   | 'fees_invoicing'
-  | 'benefactors'
-  | 'charity_funds'
   | 'cashbook'
   | 'budgets'
+  | 'benefactors'
+  | 'charity_funds'
   | 'zakat_calculator'
-  | 'faculty_hr'
+  | 'parents'
+  | 'circulars_notices'
+  | 'document_center'
+  | 'bulk_csv'
   | 'inventory'
   | 'strategic_kpis'
   | 'shura_governance'
-  | 'circulars_notices'
-  | 'document_center'
   | 'google_workspace'
   | 'ethiopian_calendar'
   | 'ai_assistant'
-  | 'audit_log';
+  | 'audit_log'
+  | 'manual_edition'
+  | 'settings';
+

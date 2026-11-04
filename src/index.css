@@ -1,8 +1,19 @@
 @import "tailwindcss";
 
 @layer base {
+  :root {
+    --color-primary: #17365D;    /* Navy Blue */
+    --color-secondary: #16836B;  /* Emerald Green */
+    --color-accent: #C49A45;     /* Soft Gold */
+    --color-background: #F5F7FA; /* Light Grey */
+    --color-card: #FFFFFF;       /* White */
+    --color-text: #273449;       /* Dark Grey */
+  }
+
   body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: #F5F7FA;
+    color: #273449;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -10,67 +21,103 @@
 }
 
 .font-arabic {
-  font-family: 'Amiri', serif;
+  font-family: 'Noto Naskh Arabic', 'Amiri', serif;
 }
 
 .font-ethiopic {
   font-family: 'Noto Sans Ethiopic', sans-serif;
 }
 
-/* Custom desktop scrollbar with emerald tint */
+.font-oromoo {
+  font-family: 'Noto Sans', 'Inter', sans-serif;
+}
+
+/* Custom modern scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: rgba(2, 6, 23, 0.7);
+  background: #EDF2F7;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(16, 185, 129, 0.25);
+  background: #CBD5E1;
   border-radius: 9999px;
-  border: 1px solid rgba(16, 185, 129, 0.1);
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(16, 185, 129, 0.5);
+  background: #94A3B8;
 }
 
-/* Board card styles for enhanced depth and clarity */
-.board-card {
-  background: linear-gradient(145deg, rgba(15, 23, 42, 0.85) 0%, rgba(2, 6, 23, 0.95) 100%);
-  border: 1px solid rgba(30, 41, 59, 0.8);
-  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+/* Professional SaaS Card styling */
+.card-saas {
+  background-color: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.board-card:hover {
-  border-color: rgba(16, 185, 129, 0.4);
-  box-shadow: 0 8px 30px -4px rgba(0, 0, 0, 0.7), 0 0 15px -2px rgba(16, 185, 129, 0.15);
+.card-saas:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.07);
 }
 
-.board-card-highlight {
-  background: linear-gradient(145deg, rgba(6, 78, 59, 0.3) 0%, rgba(2, 6, 23, 0.9) 100%);
-  border: 1px solid rgba(16, 185, 129, 0.35);
-  box-shadow: 0 4px 25px -2px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(16, 185, 129, 0.2);
+/* High-clarity status badges */
+.badge-emerald {
+  background-color: #ECFDF5;
+  color: #065F46;
+  border: 1px solid #A7F3D0;
 }
 
-/* Print styles for official Ethiopian stamped receipts, student IDs, and transcripts */
+.badge-navy {
+  background-color: #EFF6FF;
+  color: #1E40AF;
+  border: 1px solid #BFDBFE;
+}
+
+.badge-gold {
+  background-color: #FEF9C3;
+  color: #854D0E;
+  border: 1px solid #FDE047;
+}
+
+.badge-rose {
+  background-color: #FFF1F2;
+  color: #9F1239;
+  border: 1px solid #FECDD3;
+}
+
+/* Print styles for official Ethiopian stationary & certificates */
 @media print {
+  @page {
+    size: A4 portrait;
+    margin: 12mm;
+  }
+  
+  body {
+    background: white !important;
+    color: #111827 !important;
+  }
+  
   body * {
     visibility: hidden;
   }
+  
   .print-surface, .print-surface * {
     visibility: visible;
   }
+  
   .print-surface {
-    position: fixed;
+    position: absolute;
     left: 0;
     top: 0;
-    width: 100vw;
+    width: 100%;
+    margin: 0;
+    padding: 0;
     background: white !important;
-    color: black !important;
-    padding: 24px;
     box-shadow: none !important;
+    border: none !important;
   }
+  
   .no-print {
     display: none !important;
   }

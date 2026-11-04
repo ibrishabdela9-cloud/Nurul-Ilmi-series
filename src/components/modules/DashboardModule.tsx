@@ -1,35 +1,38 @@
 /**
- * Module 1: Executive Dashboard & Live Institutional Boards
- * High-clarity boards for real-time counts of enrolled students,
- * Qur'an Hifz retention, fee collections in ETB, cashbook ledger,
- * prayer timings for Addis Ababa, and rapid administrative actions.
+ * Executive SaaS Dashboard
+ * Al-Furqan Quran & Hadith Academy
+ * Key statistics, attendance overview, academic performance,
+ * financial overview, recent activities, upcoming events, and announcements.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Users,
-  Wallet,
+  UserCheck,
+  Layers,
   Receipt,
-  HeartHandshake,
-  BookOpen,
-  Plus,
-  Clock,
-  ArrowUpRight,
-  TrendingUp,
-  Building2,
+  ClipboardCheck,
+  GraduationCap,
   Calendar,
-  Sparkles,
+  Clock,
+  TrendingUp,
+  ArrowUpRight,
+  ArrowDownLeft,
+  BookOpen,
+  Award,
+  Megaphone,
   Printer,
-  Compass,
-  CheckCircle2,
+  Plus,
   ChevronRight,
   ShieldCheck,
-  Award,
+  DollarSign,
+  Sparkles,
 } from 'lucide-react';
 import { AppStoreState } from '../../lib/store';
-import { DesktopNavModule } from '../../types';
+import { DesktopNavModule, Student } from '../../types';
 import { toEthiopianDate } from '../../lib/ethiopian-calendar';
-import { calculatePrayerTimes, playAzanChime } from '../../lib/prayer';
+import { calculatePrayerTimes } from '../../lib/prayer';
+import { PrintPreviewModal } from '../common/PrintPreviewModal';
 
 interface DashboardModuleProps {
   state: AppStoreState;
@@ -44,463 +47,461 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({
 }) => {
   const ethDate = toEthiopianDate();
   const prayerData = calculatePrayerTimes();
+  const [selectedStudentForDossier, setSelectedStudentForDossier] = useState<Student | null>(null);
 
-  // Metrics computation
-  const activeStudents = state.students.filter(s => s.status === 'Active');
-  const totalMemorizedJuz = state.students.reduce((acc, s) => acc + s.memorizedJuzCount, 0);
+  // Compute key stats
+  const totalStudents = state.students.length;
+  const activeStudents = state.students.filter(s => s.status === 'Active').length;
+  const totalFaculty = state.faculty.length;
+  const totalClasses = 5; // Active Halqahs
 
-  const totalBankAndCashETB = state.accounts.reduce((acc, a) => acc + a.balanceETB, 0);
+  const totalInvoicedETB = state.invoices.reduce((sum, i) => sum + i.amountETB, 0);
+  const totalCollectedETB = state.invoices.reduce((sum, i) => sum + i.amountPaidETB, 0);
+  const collectionRate = totalInvoicedETB > 0 ? Math.round((totalCollectedETB / totalInvoicedETB) * 100) : 88;
 
-  const totalInvoicedETB = state.invoices.reduce((acc, i) => acc + i.amountETB, 0);
-  const totalCollectedETB = state.invoices.reduce((acc, i) => acc + i.amountPaidETB, 0);
-  const totalReceivablesETB = state.invoices.reduce((acc, i) => acc + i.balanceETB, 0);
-  const feeCollectionRate = totalInvoicedETB > 0 ? Math.round((totalCollectedETB / totalInvoicedETB) * 100) : 0;
+  const totalMemorizedJuz = state.students.reduce((sum, s) => sum + s.memorizedJuzCount, 0);
 
-  const activeOrphanSponsorships = state.orphanSponsorships.filter(o => o.isActive).length;
+  const topStudents = [...state.students]
+    .sort((a, b) => b.memorizedJuzCount - a.memorizedJuzCount)
+    .slice(0, 4);
+
+  const upcomingEvents = [
+    { id: 1, title: 'Term 1 Midterm Assessment Board', date: 'Nov 12, 2026', type: 'Exam' },
+    { id: 2, title: 'General Parents & Shura Assembly', date: 'Nov 18, 2026', type: 'Meeting' },
+    { id: 3, title: 'Annual Sanad Khatm & Ijazah Ceremony', date: 'Dec 05, 2026', type: 'Ceremony' },
+  ];
 
   return (
     <div className="space-y-6">
-      {/* ==================== WELCOME & EXECUTIVE BOARD BANNER ==================== */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#041f17] via-slate-950 to-[#031713] border border-emerald-500/30 p-6 shadow-2xl">
-        {/* Subtle Islamic Calligraphy watermark background */}
-        <div className="absolute right-0 top-0 bottom-0 w-96 opacity-5 pointer-events-none flex items-center justify-center font-arabic text-9xl text-amber-300 select-none">
-          نور العلم
-        </div>
-        
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-5">
-          <div className="space-y-1.5">
-            <div className="flex items-center gap-2">
-              <span className="font-arabic text-amber-300 text-lg font-bold">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</span>
-              <span className="text-[11px] px-2.5 py-0.5 rounded-full bg-emerald-950/90 border border-emerald-500/40 text-emerald-300 font-mono font-medium">
-                Addis Ababa · EAT UTC+3
+      {/* 1. Welcome Banner with Official Emblem & 3-Language Document Headers */}
+      <div className="card-saas p-6 bg-gradient-to-r from-white via-blue-50/40 to-emerald-50/40 flex flex-col md:flex-row md:items-center justify-between gap-5 border-l-4 border-l-[#17365D]">
+        <div className="flex items-center gap-4">
+          <div className="relative w-16 h-16 rounded-full p-0.5 bg-gradient-to-br from-[#16836B] to-[#C49A45] shadow-md shrink-0 flex items-center justify-center">
+            <img
+              src="/assets/aistudio/image_9f3d5314.png"
+              alt="Al-Furqan Emblem"
+              className="w-full h-full rounded-full object-contain bg-white"
+            />
+          </div>
+          <div className="space-y-1">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="font-arabic text-[#16836B] font-bold text-sm">
+                مركز الفرقان لتحفيظ القرآن الكريم و العلوم الشرعية
+              </span>
+              <span className="text-slate-300">·</span>
+              <span className="text-[11px] font-bold text-[#C49A45] uppercase">
+                GIDDU-GALA HIFZII QUR'AANAA AL-FURQAAN
               </span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center gap-3">
-              <span>Nurul Ilmi Series</span>
-              <span className="font-arabic text-amber-400 font-normal text-2xl">نور العلم</span>
+            <h1 className="text-xl sm:text-2xl font-extrabold text-[#17365D] tracking-tight uppercase leading-snug">
+              AL-FURQAN QURAN MEMORIZATION CENTER & ISLAMIC STUDIES INSTITUTE
             </h1>
-            <p className="text-slate-300 text-xs max-w-2xl leading-relaxed">
-              Integrated Qur’an Memorization (Hifz), Tajweed science, Islamic jurisprudence, and double-entry ETB institutional ledger.
+            <p className="text-xs text-slate-500 font-medium">
+              Ethiopia, Eastern Oromia, Chiro Town · Welcome back, Al-Sheikh Khadir Hamza (Head Mudir).
             </p>
           </div>
+        </div>
 
-          {/* Ethiopian Ge'ez Calendar Card */}
-          <div className="flex items-center gap-3.5 bg-slate-900/95 border border-amber-500/30 rounded-xl p-3.5 text-xs shadow-lg shrink-0">
-            <div className="w-10 h-10 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 shrink-0">
-              <Calendar className="w-5 h-5" />
+        {/* Dual Calendar Badge */}
+        <div className="flex items-center gap-3 bg-white p-3 rounded-xl border border-slate-200 shadow-xs text-xs">
+          <div className="text-right">
+            <div className="text-[10px] text-slate-400 uppercase font-semibold">Today's Date</div>
+            <div className="font-ethiopic font-bold text-[#17365D]">
+              {ethDate.monthNameAmharic} {ethDate.geezDay} ቀን {ethDate.year} ዓ.ም
             </div>
-            <div>
-              <div className="font-ethiopic font-bold text-amber-300 text-sm">
-                {ethDate.formattedAmharic}
-              </div>
-              <div className="text-[11px] text-slate-300 font-medium">
-                {ethDate.formattedEnglish}
-              </div>
-              <button
-                onClick={() => onNavigate('ethiopian_calendar')}
-                className="text-[10px] text-emerald-400 hover:text-emerald-300 underline font-semibold mt-0.5 block"
-              >
-                Open Ge’ez Engine &rarr;
-              </button>
+            <div className="text-[10px] text-slate-500 font-mono">
+              {new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })} EAT
             </div>
+          </div>
+          <div className="w-10 h-10 rounded-lg bg-[#EFF6FF] flex items-center justify-center text-[#17365D]">
+            <Calendar className="w-5 h-5" />
           </div>
         </div>
       </div>
 
-      {/* ==================== PRIMARY 4 KPI METRIC BOARDS ==================== */}
+      {/* 2. Primary KPI Statistics Cards (4 Cards) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Metric Board 1: Students & Hifz Retention */}
+        {/* Card 1: Students */}
         <div
           onClick={() => onNavigate('students')}
-          className="cursor-pointer board-card rounded-2xl p-4.5 hover:scale-[1.02] transition-all group relative overflow-hidden"
+          className="card-saas p-5 cursor-pointer hover:border-[#17365D] transition-all"
         >
-          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 to-teal-400" />
-          <div className="flex items-center justify-between text-slate-400 mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-300">
-              Active Students
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+              Total Students
             </span>
-            <div className="w-8 h-8 rounded-xl bg-emerald-950/80 border border-emerald-500/40 flex items-center justify-center text-emerald-400 group-hover:scale-110 transition-transform shadow-sm">
-              <Users className="w-4 h-4" />
+            <div className="p-2.5 rounded-xl bg-blue-50 text-[#17365D]">
+              <Users className="w-5 h-5" />
             </div>
           </div>
-          <div className="text-3xl font-extrabold text-white tracking-tight font-mono tabular-nums">
-            {activeStudents.length}{' '}
-            <span className="text-sm font-normal text-slate-400 font-sans">Enrolled</span>
-          </div>
-          <div className="mt-3 pt-2.5 border-t border-slate-800/80 text-xs text-emerald-400 flex items-center justify-between font-medium">
-            <span className="flex items-center gap-1.5">
-              <Award className="w-3.5 h-3.5 text-amber-400" />
-              <span>{totalMemorizedJuz} Juz Retained</span>
+          <div className="mt-3 flex items-baseline justify-between">
+            <span className="text-2xl font-extrabold text-[#17365D] font-mono">
+              {totalStudents}
             </span>
-            <ArrowUpRight className="w-4 h-4 text-emerald-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+            <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">
+              {activeStudents} Active
+            </span>
+          </div>
+          <div className="text-[11px] text-slate-400 mt-2 flex items-center gap-1">
+            <span>Enrolled across 10 Addis Ababa sub-cities</span>
           </div>
         </div>
 
-        {/* Metric Board 2: Net Cashbook ETB */}
+        {/* Card 2: Faculty & Ustadhs */}
+        <div
+          onClick={() => onNavigate('faculty_hr')}
+          className="card-saas p-5 cursor-pointer hover:border-[#17365D] transition-all"
+        >
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+              Faculty & Ustadhs
+            </span>
+            <div className="p-2.5 rounded-xl bg-emerald-50 text-[#16836B]">
+              <UserCheck className="w-5 h-5" />
+            </div>
+          </div>
+          <div className="mt-3 flex items-baseline justify-between">
+            <span className="text-2xl font-extrabold text-[#17365D] font-mono">
+              {totalFaculty}
+            </span>
+            <span className="text-[11px] font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded-full">
+              Sanad Certified
+            </span>
+          </div>
+          <div className="text-[11px] text-slate-400 mt-2">
+            Hifz, Tajweed, Hadith & Shafi Fiqh scholars
+          </div>
+        </div>
+
+        {/* Card 3: Classes & Halqahs */}
+        <div
+          onClick={() => onNavigate('classes_sections')}
+          className="card-saas p-5 cursor-pointer hover:border-[#17365D] transition-all"
+        >
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+              Active Halqahs
+            </span>
+            <div className="p-2.5 rounded-xl bg-amber-50 text-[#C49A45]">
+              <Layers className="w-5 h-5" />
+            </div>
+          </div>
+          <div className="mt-3 flex items-baseline justify-between">
+            <span className="text-2xl font-extrabold text-[#17365D] font-mono">
+              {totalClasses}
+            </span>
+            <span className="text-[11px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full">
+              92% Filled
+            </span>
+          </div>
+          <div className="text-[11px] text-slate-400 mt-2">
+            Circles from Foundation Nazira to Khatm
+          </div>
+        </div>
+
+        {/* Card 4: Fee Collection Rate */}
         <div
           onClick={() => onNavigate('cashbook')}
-          className="cursor-pointer board-card rounded-2xl p-4.5 hover:scale-[1.02] transition-all group relative overflow-hidden"
+          className="card-saas p-5 cursor-pointer hover:border-[#17365D] transition-all"
         >
-          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-500 to-yellow-400" />
-          <div className="flex items-center justify-between text-slate-400 mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-300">
-              Net Cashbook (ETB)
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+              Fee Collection (ETB)
             </span>
-            <div className="w-8 h-8 rounded-xl bg-amber-950/80 border border-amber-500/40 flex items-center justify-center text-amber-400 group-hover:scale-110 transition-transform shadow-sm">
-              <Wallet className="w-4 h-4" />
+            <div className="p-2.5 rounded-xl bg-teal-50 text-teal-700">
+              <Receipt className="w-5 h-5" />
             </div>
           </div>
-          <div className="text-2xl sm:text-3xl font-extrabold text-amber-300 tracking-tight font-mono tabular-nums">
-            {totalBankAndCashETB.toLocaleString('en-US', {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            })}
-          </div>
-          <div className="mt-3 pt-2.5 border-t border-slate-800/80 text-xs text-slate-400 flex items-center justify-between font-medium">
-            <span>4 Accounts (CBE, Awash, Safe)</span>
-            <ArrowUpRight className="w-4 h-4 text-amber-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-          </div>
-        </div>
-
-        {/* Metric Board 3: Tuition Invoicing */}
-        <div
-          onClick={() => onNavigate('fees_invoicing')}
-          className="cursor-pointer board-card rounded-2xl p-4.5 hover:scale-[1.02] transition-all group relative overflow-hidden"
-        >
-          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-teal-500 to-cyan-400" />
-          <div className="flex items-center justify-between text-slate-400 mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-300">
-              Tuition Invoicing
+          <div className="mt-3 flex items-baseline justify-between">
+            <span className="text-xl font-extrabold text-[#17365D] font-mono">
+              {collectionRate}%
             </span>
-            <div className="w-8 h-8 rounded-xl bg-teal-950/80 border border-teal-500/40 flex items-center justify-center text-teal-400 group-hover:scale-110 transition-transform shadow-sm">
-              <Receipt className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="text-3xl font-extrabold text-white tracking-tight font-mono tabular-nums">
-            {feeCollectionRate}%{' '}
-            <span className="text-sm font-normal text-teal-400 font-sans">Collected</span>
-          </div>
-          <div className="mt-3 pt-2.5 border-t border-slate-800/80 text-xs text-slate-400 flex items-center justify-between font-medium">
-            <span>Due: {totalReceivablesETB.toLocaleString()} ETB</span>
-            <ArrowUpRight className="w-4 h-4 text-teal-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-          </div>
-        </div>
-
-        {/* Metric Board 4: Orphan Sponsorship */}
-        <div
-          onClick={() => onNavigate('charity_funds')}
-          className="cursor-pointer board-card rounded-2xl p-4.5 hover:scale-[1.02] transition-all group relative overflow-hidden"
-        >
-          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-rose-500 to-pink-500" />
-          <div className="flex items-center justify-between text-slate-400 mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-300">
-              Orphan Sponsorship
+            <span className="text-[10px] font-bold text-emerald-700 font-mono bg-emerald-50 px-2 py-0.5 rounded-full">
+              {totalCollectedETB.toLocaleString()} ETB
             </span>
-            <div className="w-8 h-8 rounded-xl bg-rose-950/80 border border-rose-500/40 flex items-center justify-center text-rose-400 group-hover:scale-110 transition-transform shadow-sm">
-              <HeartHandshake className="w-4 h-4" />
-            </div>
           </div>
-          <div className="text-3xl font-extrabold text-white tracking-tight font-mono tabular-nums">
-            {activeOrphanSponsorships}{' '}
-            <span className="text-sm font-normal text-rose-300 font-sans">100% Sponsored</span>
-          </div>
-          <div className="mt-3 pt-2.5 border-t border-slate-800/80 text-xs text-rose-400 flex items-center justify-between font-medium">
-            <span>Boarding & Mushafs Covered</span>
-            <ArrowUpRight className="w-4 h-4 text-rose-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+          <div className="text-[11px] text-slate-400 mt-2">
+            CBE, Awash Bank & Telebirr verified
           </div>
         </div>
       </div>
 
-      {/* ==================== QUICK COMMAND ACTION RIBBON ==================== */}
-      <div className="board-card rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3 text-xs shadow-md">
-        <span className="font-bold text-slate-200 flex items-center gap-2">
-          <Sparkles className="w-4 h-4 text-amber-400" />
-          <span className="tracking-wide uppercase text-[11px]">Quick Action Command Ribbon:</span>
-        </span>
-        <div className="flex flex-wrap items-center gap-2">
+      {/* 3. Quick Command Ribbon */}
+      <div className="card-saas p-4 bg-[#F8FAFC]">
+        <div className="flex items-center justify-between gap-2 pb-2 mb-2 border-b border-slate-200">
+          <span className="text-xs font-bold text-[#17365D] uppercase tracking-wider flex items-center gap-1.5">
+            <Sparkles className="w-3.5 h-3.5 text-[#C49A45]" />
+            Quick Command Actions
+          </span>
+          <span className="text-[10px] text-slate-400">One-click administrative tools</span>
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
           <button
-            onClick={() => onNavigate('hifz_tracker')}
-            className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold transition-all shadow-md shadow-emerald-950 active:scale-95"
+            onClick={() => onNavigate('students')}
+            className="flex items-center gap-2 p-2 rounded-lg bg-white border border-slate-200 hover:border-[#17365D] text-xs font-semibold text-slate-700 transition"
           >
-            <BookOpen className="w-3.5 h-3.5 text-amber-300" />
-            <span>Record Daily Sabaq</span>
+            <Plus className="w-4 h-4 text-[#16836B]" />
+            <span>Enroll Student</span>
+          </button>
+          <button
+            onClick={() => onNavigate('attendance')}
+            className="flex items-center gap-2 p-2 rounded-lg bg-white border border-slate-200 hover:border-[#17365D] text-xs font-semibold text-slate-700 transition"
+          >
+            <ClipboardCheck className="w-4 h-4 text-[#17365D]" />
+            <span>Mark Attendance</span>
           </button>
           <button
             onClick={() => onNavigate('cashbook')}
-            className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-800/90 hover:bg-slate-700/90 border border-slate-700 text-slate-200 font-semibold transition-all hover:border-amber-500/50 active:scale-95"
+            className="flex items-center gap-2 p-2 rounded-lg bg-white border border-slate-200 hover:border-[#17365D] text-xs font-semibold text-slate-700 transition"
           >
-            <Plus className="w-3.5 h-3.5 text-amber-400" />
+            <DollarSign className="w-4 h-4 text-[#C49A45]" />
             <span>Post Cash Voucher</span>
           </button>
           <button
-            onClick={() => onNavigate('students')}
-            className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-800/90 hover:bg-slate-700/90 border border-slate-700 text-slate-200 font-semibold transition-all hover:border-emerald-500/50 active:scale-95"
+            onClick={() => onNavigate('hifz_tracker')}
+            className="flex items-center gap-2 p-2 rounded-lg bg-white border border-slate-200 hover:border-[#17365D] text-xs font-semibold text-slate-700 transition"
           >
-            <Plus className="w-3.5 h-3.5 text-emerald-400" />
-            <span>Student Admission</span>
+            <BookOpen className="w-4 h-4 text-teal-600" />
+            <span>Log Recitation</span>
           </button>
           <button
             onClick={() => onNavigate('document_center')}
-            className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-800/90 hover:bg-slate-700/90 border border-slate-700 text-slate-200 font-semibold transition-all hover:border-teal-500/50 active:scale-95"
+            className="flex items-center gap-2 p-2 rounded-lg bg-white border border-slate-200 hover:border-[#17365D] text-xs font-semibold text-slate-700 transition"
           >
-            <Printer className="w-3.5 h-3.5 text-teal-400" />
-            <span>Print Stamped Receipt</span>
-          </button>
-          <button
-            onClick={() => onNavigate('zakat_calculator')}
-            className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-800/90 hover:bg-slate-700/90 border border-slate-700 text-slate-200 font-semibold transition-all hover:border-amber-500/50 active:scale-95"
-          >
-            <TrendingUp className="w-3.5 h-3.5 text-amber-400" />
-            <span>Calculate Zakat Nisab</span>
+            <Printer className="w-4 h-4 text-purple-600" />
+            <span>Official Print Hub</span>
           </button>
         </div>
       </div>
 
-      {/* ==================== SPLIT BOARDS: MOSQUE OPERATIONS & HIFZ FEED ==================== */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left Column: Addis Ababa Mosque & Solar Prayer Board (1 Col) */}
-        <div className="board-card rounded-2xl p-5 space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-slate-800">
-            <div className="flex items-center gap-2.5">
-              <div className="w-7 h-7 rounded-lg bg-emerald-950 border border-emerald-500/40 flex items-center justify-center text-emerald-400">
-                <Clock className="w-4 h-4" />
-              </div>
-              <div>
-                <h2 className="font-bold text-sm text-white tracking-wide">
-                  Addis Ababa Prayer Board
-                </h2>
-                <span className="text-[10px] text-slate-400">Solar Astrological Timetable</span>
-              </div>
+      {/* 4. Two Column Grid: Attendance & Financial Overview */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        {/* Attendance & Hifz Milestones (7 Cols) */}
+        <div className="lg:col-span-7 card-saas p-6 space-y-5">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+            <div className="flex items-center gap-2">
+              <ClipboardCheck className="w-5 h-5 text-[#16836B]" />
+              <h3 className="font-bold text-sm text-[#17365D]">Today's Roll-Call & Attendance Overview</h3>
             </div>
-            <button
-              onClick={() => onNavigate('prayer_engine')}
-              className="text-xs text-emerald-400 hover:text-emerald-300 font-semibold hover:underline"
-            >
-              Full Timetable &rarr;
-            </button>
-          </div>
-
-          {/* Next Prayer Highlight Box */}
-          <div className="board-card-highlight rounded-xl p-4 flex items-center justify-between">
-            <div className="space-y-1">
-              <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-bold uppercase tracking-wider">
-                Next Adhan Call
-              </span>
-              <div className="text-2xl font-extrabold text-white flex items-center gap-2 mt-1">
-                <span>{prayerData.nextPrayer?.nameEnglish}</span>
-                <span className="font-arabic text-amber-300 text-lg font-bold">
-                  {prayerData.nextPrayer?.nameArabic}
-                </span>
-              </div>
-              <div className="text-xs text-slate-300">
-                Time:{' '}
-                <span className="font-mono text-emerald-300 font-bold">
-                  {prayerData.nextPrayer?.timeString}
-                </span>
-              </div>
-            </div>
-            <div className="text-right">
-              <div className="text-2xl font-extrabold text-amber-300 font-mono tabular-nums">
-                {prayerData.countdownFormatted}
-              </div>
-              <button
-                onClick={() => playAzanChime()}
-                className="mt-1.5 text-xs px-2.5 py-1 rounded-lg bg-emerald-900/90 hover:bg-emerald-800 border border-emerald-600/60 text-emerald-200 transition-all font-semibold active:scale-95 shadow-sm"
-              >
-                Chime Test 🔔
-              </button>
-            </div>
-          </div>
-
-          {/* Quick Timetable Mini List */}
-          <div className="space-y-1.5 text-xs">
-            {prayerData.prayers.map(p => (
-              <div
-                key={p.id}
-                className={`flex items-center justify-between px-3 py-2 rounded-xl border transition-all ${
-                  p.isNext
-                    ? 'bg-emerald-950/80 border-emerald-500/60 text-white font-bold shadow-md shadow-emerald-950/50'
-                    : p.passed
-                    ? 'bg-slate-950/40 border-slate-900 text-slate-400'
-                    : 'bg-slate-900/70 border-slate-800/80 text-slate-200'
-                }`}
-              >
-                <div className="flex items-center gap-2.5">
-                  <span className="font-arabic text-amber-300 font-bold text-sm">{p.nameArabic}</span>
-                  <span className="font-medium">{p.nameEnglish}</span>
-                </div>
-                <span className="font-mono font-bold tabular-nums">{p.timeString}</span>
-              </div>
-            ))}
-          </div>
-
-          {/* Qibla Direction Notice */}
-          <div className="flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-300">
-            <span className="flex items-center gap-2">
-              <Compass className="w-4 h-4 text-amber-400" />
-              <span>Qibla to Ka’bah (Mecca)</span>
+            <span className="text-xs px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold">
+              96.2% Present
             </span>
-            <span className="font-mono font-bold text-amber-300">353.4° NNW</span>
           </div>
-        </div>
 
-        {/* Right Column: Recent Sabaq Recitations & Hifz Progress Board (2 Cols) */}
-        <div className="lg:col-span-2 space-y-6">
-          {/* Recent Hifz Daily Recitations Board */}
-          <div className="board-card rounded-2xl p-5">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-800 mb-3.5">
-              <div className="flex items-center gap-2.5">
-                <div className="w-7 h-7 rounded-lg bg-emerald-950 border border-emerald-500/40 flex items-center justify-center text-emerald-400">
-                  <BookOpen className="w-4 h-4" />
-                </div>
-                <div>
-                  <h2 className="font-bold text-sm text-white tracking-wide">
-                    Hifz Recitation Activity Board
-                  </h2>
-                  <span className="text-[10px] text-slate-400">Live Sabaq, Sabqi & Manzil Registry</span>
-                </div>
+          {/* Progress Indicators */}
+          <div className="grid grid-cols-3 gap-3 text-center">
+            <div className="bg-[#ECFDF5] border border-[#A7F3D0] p-3 rounded-xl">
+              <span className="text-[10px] text-[#065F46] uppercase font-bold block">Present</span>
+              <span className="text-xl font-extrabold text-[#065F46] font-mono">112</span>
+              <span className="text-[10px] text-emerald-600 font-medium">96.2%</span>
+            </div>
+            <div className="bg-[#FEF9C3] border border-[#FDE047] p-3 rounded-xl">
+              <span className="text-[10px] text-[#854D0E] uppercase font-bold block">Late</span>
+              <span className="text-xl font-extrabold text-[#854D0E] font-mono">3</span>
+              <span className="text-[10px] text-amber-700 font-medium">2.5%</span>
+            </div>
+            <div className="bg-[#FFF1F2] border border-[#FECDD3] p-3 rounded-xl">
+              <span className="text-[10px] text-[#9F1239] uppercase font-bold block">Excused / Absent</span>
+              <span className="text-xl font-extrabold text-[#9F1239] font-mono">2</span>
+              <span className="text-[10px] text-rose-700 font-medium">1.3%</span>
+            </div>
+          </div>
+
+          {/* Academic Performance & Top Memorizers */}
+          <div className="pt-2">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <Award className="w-4 h-4 text-[#C49A45]" />
+                <span className="font-bold text-xs text-[#17365D] uppercase">
+                  Top Qur’an Hifz Memorization Progress
+                </span>
               </div>
               <button
                 onClick={() => onNavigate('hifz_tracker')}
-                className="text-xs text-emerald-400 hover:text-emerald-300 font-semibold hover:underline"
+                className="text-[11px] text-[#16836B] hover:underline font-semibold"
               >
-                Open Hifz Tracker &rarr;
+                View 30-Juz Board
               </button>
             </div>
 
-            <div className="overflow-x-auto rounded-xl border border-slate-800">
-              <table className="w-full text-xs text-left">
-                <thead className="bg-slate-950 text-slate-300 border-b border-slate-800">
-                  <tr>
-                    <th className="py-2.5 px-3.5 font-bold">Student</th>
-                    <th className="py-2.5 px-3.5 font-bold">Sabaq (Lesson)</th>
-                    <th className="py-2.5 px-3.5 font-bold text-center">Tajweed</th>
-                    <th className="py-2.5 px-3.5 font-bold">Sabqi</th>
-                    <th className="py-2.5 px-3.5 font-bold">Manzil</th>
-                    <th className="py-2.5 px-3.5 font-bold text-right">Action</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-800/80 bg-slate-900/50">
-                  {state.hifzRecords.slice(0, 5).map(record => {
-                    const student = state.students.find(s => s.id === record.studentId);
-                    return (
-                      <tr key={record.id} className="hover:bg-slate-800/60 transition-colors">
-                        <td className="py-2.5 px-3.5">
-                          <div className="font-bold text-slate-100">
-                            {student?.fullNameEnglish || 'Unknown Student'}
-                          </div>
-                          <div className="font-ethiopic text-[11px] text-amber-300">
-                            {student?.fullNameAmharic}
-                          </div>
-                        </td>
-                        <td className="py-2.5 px-3.5">
-                          <div className="font-bold text-emerald-400">
-                            Surah #{record.sabaqSurah}
-                          </div>
-                          <div className="text-[11px] text-slate-300 font-mono">
-                            Ayahs {record.sabaqStartAyah}–{record.sabaqEndAyah}
-                          </div>
-                        </td>
-                        <td className="py-2.5 px-3.5 text-center">
-                          <span
-                            className={`inline-block px-2.5 py-0.5 rounded-full text-[11px] font-bold font-mono ${
-                              record.sabaqTajweedScore >= 9
-                                ? 'bg-emerald-950 text-emerald-300 border border-emerald-600/60'
-                                : 'bg-amber-950 text-amber-300 border border-amber-600/60'
-                            }`}
-                          >
-                            {record.sabaqTajweedScore}/10
-                          </span>
-                        </td>
-                        <td className="py-2.5 px-3.5">
-                          <div className="text-slate-200 font-medium">Juz {record.sabqiJuz}</div>
-                          <div className="text-[10px] text-slate-400">{record.sabqiGrade}</div>
-                        </td>
-                        <td className="py-2.5 px-3.5">
-                          <div className="text-slate-200 font-medium">Juz {record.manzilJuz}</div>
-                          <div className="text-[10px] text-emerald-400 font-semibold">{record.manzilRetention}</div>
-                        </td>
-                        <td className="py-2.5 px-3.5 text-right">
-                          <button
-                            onClick={() => {
-                              if (student) onSelectStudent(student.id);
-                              onNavigate('students');
-                            }}
-                            className="px-2.5 py-1 rounded bg-slate-800 hover:bg-emerald-950 text-slate-200 hover:text-emerald-300 border border-slate-700 hover:border-emerald-600/50 transition-colors text-[11px] font-medium"
-                          >
-                            Profile
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          {/* Recent Financial Vouchers Ledger Board */}
-          <div className="board-card rounded-2xl p-5">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-800 mb-3.5">
-              <div className="flex items-center gap-2.5">
-                <div className="w-7 h-7 rounded-lg bg-amber-950 border border-amber-500/40 flex items-center justify-center text-amber-400">
-                  <Wallet className="w-4 h-4" />
-                </div>
-                <div>
-                  <h2 className="font-bold text-sm text-white tracking-wide">
-                    Treasury & Audited Cashbook Vouchers
-                  </h2>
-                  <span className="text-[10px] text-slate-400">CBE, Awash Bank, Cash Safe & Telebirr</span>
-                </div>
-              </div>
-              <button
-                onClick={() => onNavigate('cashbook')}
-                className="text-xs text-amber-400 hover:text-amber-300 font-semibold hover:underline"
-              >
-                Cashbook Ledger &rarr;
-              </button>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {state.vouchers.slice(0, 4).map(v => (
+            <div className="space-y-2">
+              {topStudents.map(st => (
                 <div
-                  key={v.id}
-                  className="bg-slate-950/90 border border-slate-800/90 hover:border-amber-500/40 rounded-xl p-3.5 flex items-center justify-between text-xs transition-colors shadow-sm"
+                  key={st.id}
+                  onClick={() => setSelectedStudentForDossier(st)}
+                  className="p-3 rounded-xl border border-slate-100 hover:border-slate-300 hover:bg-slate-50 transition flex items-center justify-between cursor-pointer text-xs"
                 >
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <span className="font-mono font-bold text-amber-300">{v.voucherNumber}</span>
-                      <span
-                        className={`text-[10px] px-2 py-0.2 rounded-full font-bold ${
-                          v.type === 'INCOME'
-                            ? 'bg-emerald-950 text-emerald-300 border border-emerald-600/60'
-                            : 'bg-rose-950 text-rose-300 border border-rose-600/60'
-                        }`}
-                      >
-                        {v.type}
-                      </span>
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-[#17365D] text-white flex items-center justify-center font-bold text-xs">
+                      {st.fullNameEnglish.charAt(0)}
                     </div>
-                    <div className="text-slate-100 font-semibold truncate max-w-[200px]">
-                      {v.payerReceiver}
+                    <div>
+                      <div className="font-bold text-slate-800">{st.fullNameEnglish}</div>
+                      <div className="text-[11px] text-slate-400">{st.rollNo} · {st.hifzLevel}</div>
                     </div>
-                    <div className="text-[10px] text-slate-400 font-medium">{v.category}</div>
                   </div>
+
                   <div className="text-right">
-                    <div
-                      className={`font-mono font-extrabold text-sm ${
-                        v.type === 'INCOME' ? 'text-emerald-400' : 'text-rose-400'
-                      }`}
-                    >
-                      {v.type === 'INCOME' ? '+' : '-'} {v.amountETB.toLocaleString()} ETB
-                    </div>
-                    <div className="text-[10px] text-slate-400 font-medium mt-0.5">{v.status}</div>
+                    <span className="font-mono font-bold text-[#16836B] text-sm">
+                      {st.memorizedJuzCount} of 30 Juz
+                    </span>
+                    <span className="text-[10px] text-slate-400 block">
+                      Surah #{st.currentSurah} Ayah {st.currentAyah}
+                    </span>
                   </div>
                 </div>
               ))}
             </div>
           </div>
         </div>
+
+        {/* Financial Overview & Cash Balance (5 Cols) */}
+        <div className="lg:col-span-5 card-saas p-6 space-y-4 flex flex-col justify-between">
+          <div>
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <div className="flex items-center gap-2">
+                <TrendingUp className="w-5 h-5 text-[#17365D]" />
+                <h3 className="font-bold text-sm text-[#17365D]">Treasury & Financial Overview</h3>
+              </div>
+              <button
+                onClick={() => onNavigate('cashbook')}
+                className="text-[11px] text-[#16836B] hover:underline font-semibold"
+              >
+                Cashbook & Chart
+              </button>
+            </div>
+
+            {/* Total Balance Card */}
+            <div className="mt-4 p-4 rounded-xl bg-gradient-to-br from-[#17365D] to-[#102642] text-white">
+              <span className="text-[11px] text-slate-300 uppercase tracking-wider block">
+                Total Multi-Account Liquidity
+              </span>
+              <div className="text-2xl font-extrabold font-mono mt-1 text-[#C49A45]">
+                {state.accounts.reduce((s, a) => s + a.balanceETB, 0).toLocaleString()} ETB
+              </div>
+              <span className="text-[10px] text-emerald-300 mt-1 block">
+                Commercial Bank of Ethiopia · Awash Bank · Safe
+              </span>
+            </div>
+
+            {/* Inflows vs Outflows mini meters */}
+            <div className="grid grid-cols-2 gap-3 mt-4 text-xs">
+              <div className="bg-[#F8FAFC] border border-slate-200 p-3 rounded-xl">
+                <span className="text-slate-500 block text-[10px] uppercase font-semibold">Total Revenue Inflows</span>
+                <span className="text-base font-bold text-[#16836B] font-mono mt-0.5 block">
+                  {state.vouchers.filter(v => v.type === 'INCOME').reduce((s, v) => s + v.amountETB, 0).toLocaleString()} ETB
+                </span>
+              </div>
+              <div className="bg-[#F8FAFC] border border-slate-200 p-3 rounded-xl">
+                <span className="text-slate-500 block text-[10px] uppercase font-semibold">Operating Expenses</span>
+                <span className="text-base font-bold text-[#17365D] font-mono mt-0.5 block">
+                  {state.vouchers.filter(v => v.type === 'EXPENSE').reduce((s, v) => s + v.amountETB, 0).toLocaleString()} ETB
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Upcoming Events Box */}
+          <div className="pt-3 border-t border-slate-100">
+            <span className="font-bold text-xs text-[#17365D] uppercase block mb-2">
+              Upcoming Institutional Events
+            </span>
+            <div className="space-y-2 text-xs">
+              {upcomingEvents.map(ev => (
+                <div key={ev.id} className="flex items-center justify-between p-2 rounded-lg bg-[#F8FAFC]">
+                  <span className="font-semibold text-slate-700">{ev.title}</span>
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-100 text-[#17365D] font-bold">
+                    {ev.date}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
+
+      {/* 5. Recent Activities & Important Announcements */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        {/* Recent Activities (7 Cols) */}
+        <div className="lg:col-span-7 card-saas p-6 space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+            <h3 className="font-bold text-sm text-[#17365D]">Recent Operations & Audit Trail</h3>
+            <button
+              onClick={() => onNavigate('audit_log')}
+              className="text-[11px] text-[#16836B] hover:underline font-semibold"
+            >
+              View Full Audit Trail
+            </button>
+          </div>
+
+          <div className="space-y-3 text-xs">
+            {state.auditLogs.slice(0, 5).map(log => (
+              <div key={log.id} className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-slate-50 transition border border-transparent hover:border-slate-100">
+                <div className="w-2 h-2 rounded-full bg-[#16836B] mt-1.5 shrink-0" />
+                <div className="flex-1">
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-slate-800">{log.action}</span>
+                    <span className="text-[10px] text-slate-400 font-mono">
+                      {new Date(log.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </span>
+                  </div>
+                  <p className="text-slate-600 mt-0.5 text-[11px]">{log.details}</p>
+                  <span className="text-[10px] text-slate-400 font-medium">Actor: {log.actor}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Important Announcements (5 Cols) */}
+        <div className="lg:col-span-5 card-saas p-6 space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+            <div className="flex items-center gap-2">
+              <Megaphone className="w-4 h-4 text-[#C49A45]" />
+              <h3 className="font-bold text-sm text-[#17365D]">Important Circulars</h3>
+            </div>
+            <button
+              onClick={() => onNavigate('circulars_notices')}
+              className="text-[11px] text-[#16836B] hover:underline font-semibold"
+            >
+              All Circulars
+            </button>
+          </div>
+
+          <div className="space-y-3 text-xs">
+            {state.notices.slice(0, 3).map(n => (
+              <div key={n.id} className="p-3 rounded-xl border border-slate-200 bg-[#F8FAFC] space-y-1">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-[#17365D]">{n.titleEnglish}</span>
+                  <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${
+                    n.priority === 'Urgent'
+                      ? 'bg-rose-100 text-rose-800'
+                      : n.priority === 'High'
+                      ? 'bg-amber-100 text-amber-800'
+                      : 'bg-blue-100 text-blue-800'
+                  }`}>
+                    {n.priority}
+                  </span>
+                </div>
+                <div className="font-ethiopic text-[11px] text-slate-700">{n.titleAmharic}</div>
+                <p className="text-slate-600 line-clamp-2 text-[11px] mt-1">{n.contentEnglish}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Print Preview Modal if a student is clicked */}
+      {selectedStudentForDossier && (
+        <PrintPreviewModal
+          isOpen={true}
+          onClose={() => setSelectedStudentForDossier(null)}
+          documentType="DOSSIER"
+          student={selectedStudentForDossier}
+          assessments={state.assessments}
+          hifzRecords={state.hifzRecords}
+        />
+      )}
     </div>
   );
 };

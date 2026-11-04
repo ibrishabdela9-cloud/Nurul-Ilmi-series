@@ -1,27 +1,42 @@
 /**
- * Desktop Titlebar & Executive Header
- * Native window chrome, live dual Ethiopian Ge'ez & Gregorian clock,
- * live Addis Ababa prayer status bar with Azan chime trigger,
- * and quick-action launcher.
+ * Top Navigation Bar & Executive Header
+ * Inspired by premium SaaS education platforms.
+ * Contains:
+ * - Academy Branding (Al-Furqan Quran & Hadith Academy)
+ * - Global Search (Cmd+K / Ctrl+K)
+ * - Live Dual Ge'ez Calendar & Prayer ticker
+ * - Interactive Notifications Menu with unread badge
+ * - Multilingual Language Selector (English, Afaan Oromoo, Arabic RTL, Amharic)
+ * - Academic Year Selector
+ * - User Profile & Account Menu
+ * - Mobile Drawer Toggle
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Bell,
   Search,
-  Volume2,
-  VolumeX,
-  Maximize2,
-  Minimize2,
-  Compass,
+  Globe,
   Calendar as CalendarIcon,
   Clock,
-  Sparkles,
+  User,
+  ChevronDown,
+  LogOut,
+  Settings,
+  Shield,
   Printer,
+  Volume2,
+  Menu,
+  Check,
+  CheckCircle2,
+  X,
+  ExternalLink,
+  Edit3,
 } from 'lucide-react';
 import { toEthiopianDate } from '../../lib/ethiopian-calendar';
 import { calculatePrayerTimes, playAzanChime } from '../../lib/prayer';
 import { DesktopNavModule } from '../../types';
+import { SupportedLanguage, TRANSLATIONS } from '../../lib/i18n';
 import { PWAInstallButton } from './PWAInstallButton';
 
 interface DesktopHeaderProps {
@@ -30,6 +45,11 @@ interface DesktopHeaderProps {
   onOpenCommandPalette: () => void;
   isMaximized: boolean;
   onToggleMaximize: () => void;
+  currentLanguage: SupportedLanguage;
+  onLanguageChange: (lang: SupportedLanguage) => void;
+  academicYear: string;
+  onAcademicYearChange: (year: string) => void;
+  onToggleSidebarMobile?: () => void;
 }
 
 export const DesktopHeader: React.FC<DesktopHeaderProps> = ({
@@ -38,169 +58,349 @@ export const DesktopHeader: React.FC<DesktopHeaderProps> = ({
   onOpenCommandPalette,
   isMaximized,
   onToggleMaximize,
+  currentLanguage,
+  onLanguageChange,
+  academicYear,
+  onAcademicYearChange,
+  onToggleSidebarMobile,
 }) => {
   const [currentTime, setCurrentTime] = useState<Date>(new Date());
-  const [chimeTested, setChimeTested] = useState<boolean>(false);
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+  const [isLanguageOpen, setIsLanguageOpen] = useState(false);
+  const [isYearOpen, setIsYearOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+
+  const notificationsRef = useRef<HTMLDivElement>(null);
+  const languageRef = useRef<HTMLDivElement>(null);
+  const yearRef = useRef<HTMLDivElement>(null);
+  const profileRef = useRef<HTMLDivElement>(null);
+
+  const t = TRANSLATIONS[currentLanguage];
+
+  // Close dropdowns on outside click
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as Node;
+      if (notificationsRef.current && !notificationsRef.current.contains(target)) setIsNotificationsOpen(false);
+      if (languageRef.current && !languageRef.current.contains(target)) setIsLanguageOpen(false);
+      if (yearRef.current && !yearRef.current.contains(target)) setIsYearOpen(false);
+      if (profileRef.current && !profileRef.current.contains(target)) setIsProfileOpen(false);
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 1000);
+    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
 
   const ethDate = toEthiopianDate(currentTime);
   const prayerData = calculatePrayerTimes(currentTime);
 
-  const handleChimeTest = () => {
-    playAzanChime();
-    setChimeTested(true);
-    setTimeout(() => setChimeTested(false), 2000);
-  };
+  const sampleNotifications = [
+    { id: 1, title: 'Term 1 Examination Schedule Released', time: '10m ago', read: false },
+    { id: 2, title: 'New Tuition Payment of 12,500 ETB Received', time: '1h ago', read: false },
+    { id: 3, title: 'Grand Anwar Mosque Jumu’ah Assembly Circular', time: '3h ago', read: true },
+  ];
 
   return (
-    <header className="h-14 bg-slate-950/95 backdrop-blur-xl border-b border-emerald-900/40 flex items-center justify-between px-3.5 select-none z-30 shrink-0 shadow-lg">
-      {/* Left: Window Controls & App Identity */}
+    <header className="h-16 bg-[#17365D] text-white border-b border-[#273449]/30 flex items-center justify-between px-4 sm:px-6 select-none z-30 shrink-0 shadow-md">
+      {/* Left: Mobile Drawer Button + Academy Identity */}
       <div className="flex items-center gap-3">
-        {/* macOS-style desktop buttons */}
-        <div className="flex items-center gap-1.5 mr-2">
+        {onToggleSidebarMobile && (
           <button
-            title="Minimize to Dashboard"
-            onClick={() => onNavigate('dashboard')}
-            className="w-3 h-3 rounded-full bg-rose-500 hover:bg-rose-400 transition-colors shadow-sm"
-          />
-          <button
-            title="Minimize"
-            onClick={() => onNavigate('dashboard')}
-            className="w-3 h-3 rounded-full bg-amber-500 hover:bg-amber-400 transition-colors shadow-sm"
-          />
-          <button
-            title={isMaximized ? 'Restore Window' : 'Maximize Window'}
-            onClick={onToggleMaximize}
-            className="w-3 h-3 rounded-full bg-emerald-500 hover:bg-emerald-400 transition-colors shadow-sm"
-          />
-        </div>
+            onClick={onToggleSidebarMobile}
+            className="p-2 rounded-lg bg-white/10 hover:bg-white/20 text-white lg:hidden transition"
+            title="Toggle Menu"
+          >
+            <Menu className="w-5 h-5" />
+          </button>
+        )}
 
-        {/* Brand Identity */}
+        {/* Brand Crest with Official Logo */}
         <button
           onClick={() => onNavigate('dashboard')}
-          className="flex items-center gap-2.5 group text-left"
+          className="flex items-center gap-3 text-left group"
         >
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-600 via-emerald-700 to-teal-900 flex items-center justify-center shadow-md shadow-emerald-950/80 border border-emerald-400/40 group-hover:border-amber-400/60 transition-colors">
-            <span className="font-arabic text-amber-300 font-bold text-lg leading-none">ن</span>
+          <div className="relative w-11 h-11 rounded-full p-0.5 bg-gradient-to-br from-[#16836B] to-[#C49A45] shadow-md flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+            <img
+              src="/assets/aistudio/image_9f3d5314.png"
+              alt="Al-Furqan Logo"
+              className="w-full h-full rounded-full object-contain bg-white"
+            />
           </div>
-          <div className="hidden sm:block">
+          <div>
             <div className="flex items-center gap-2">
-              <span className="font-bold text-sm tracking-tight text-white group-hover:text-emerald-300 transition-colors">
-                Nurul Ilmi
+              <span className="font-extrabold text-sm sm:text-base tracking-tight text-white group-hover:text-amber-200 transition-colors">
+                Al-Furqan Center & Institute
               </span>
-              <span className="font-arabic text-sm text-amber-400 font-bold">نور العلم</span>
-              <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-950/80 border border-emerald-700/60 text-emerald-300 font-medium">
-                Addis Ababa · ETB
+              <span className="font-arabic text-xs text-[#C49A45] font-bold hidden md:inline">
+                مركز الفرقان
               </span>
             </div>
-            <div className="text-[10px] text-slate-400 leading-none mt-0.5">
-              Integrated Qur’an & Financial Desktop Architecture
+            <div className="text-[10px] text-slate-300 font-medium leading-tight hidden sm:block">
+              Hifz & Islamic Studies · Ethiopia, Eastern Oromia, Chiro Town
             </div>
           </div>
         </button>
       </div>
 
-      {/* Center: Live Prayer Timetable Badge & Ge'ez Calendar */}
-      <div className="hidden md:flex items-center gap-3 bg-slate-900/90 border border-emerald-800/40 rounded-full px-3.5 py-1 text-xs shadow-inner">
-        {/* Ethiopian Date */}
+      {/* Center: Live Prayer & Ge'ez Badge */}
+      <div className="hidden xl:flex items-center gap-3 bg-white/10 border border-white/15 rounded-full px-4 py-1.5 text-xs backdrop-blur-md">
         <button
           onClick={() => onNavigate('ethiopian_calendar')}
-          className="flex items-center gap-1.5 text-slate-200 hover:text-amber-300 transition-colors pr-2.5 border-r border-slate-800"
-          title="Open Ethiopian Ge'ez Calendar Engine"
+          className="flex items-center gap-1.5 text-slate-100 hover:text-[#C49A45] transition-colors pr-3 border-r border-white/20"
+          title="Open Ethiopian Ge'ez Calendar"
         >
-          <CalendarIcon className="w-3.5 h-3.5 text-amber-400" />
-          <span className="font-ethiopic font-semibold text-amber-300">{ethDate.monthNameAmharic} {ethDate.geezDay}</span>
-          <span className="text-[11px] text-slate-400 font-mono">({ethDate.year} ዓ.ም)</span>
+          <CalendarIcon className="w-3.5 h-3.5 text-[#C49A45]" />
+          <span className="font-ethiopic font-semibold">
+            {ethDate.monthNameAmharic} {ethDate.geezDay} ቀን
+          </span>
+          <span className="text-[11px] text-slate-300 font-mono">({ethDate.year} ዓ.ም)</span>
         </button>
 
-        {/* Next Prayer & Azan Countdown */}
         <button
           onClick={() => onNavigate('prayer_engine')}
-          className="flex items-center gap-1.5 text-slate-200 hover:text-emerald-300 transition-colors"
-          title="Open Solar Prayer Engine for Addis Ababa"
+          className="flex items-center gap-1.5 text-slate-100 hover:text-emerald-300 transition-colors"
+          title="Real-Time Prayer Tracker for Addis Ababa"
         >
           <Clock className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
-          <span className="text-slate-400">Next:</span>
+          <span className="text-slate-300">Next:</span>
           <span className="font-bold text-emerald-300">{prayerData.nextPrayer?.nameEnglish}</span>
-          <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-600/60 font-mono font-bold shadow-sm">
+          <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#16836B] text-white font-mono font-bold shadow-xs">
             in {prayerData.countdownFormatted}
           </span>
         </button>
 
-        {/* Qibla Direction */}
         <button
-          onClick={() => onNavigate('prayer_engine')}
-          className="flex items-center gap-1 text-[11px] text-slate-400 hover:text-amber-300 pl-2.5 border-l border-slate-800 font-medium"
-          title="Qibla Bearing from Addis Ababa to Ka'bah (Mecca)"
-        >
-          <Compass className="w-3.5 h-3.5 text-amber-400" />
-          <span>353.4° NNW</span>
-        </button>
-
-        {/* Azan Chime Test */}
-        <button
-          onClick={handleChimeTest}
-          className={`p-1 rounded-full text-slate-400 hover:text-amber-400 transition-all ${
-            chimeTested ? 'text-amber-400 scale-125' : ''
-          }`}
-          title={chimeTested ? 'Chime Playing!' : 'Test Azan Web Audio Chime'}
+          onClick={() => playAzanChime()}
+          className="p-1 hover:text-[#C49A45] text-slate-300 transition"
+          title="Test Azan Chime"
         >
           <Volume2 className="w-3.5 h-3.5" />
         </button>
       </div>
 
-      {/* Right: Quick Search, Action Shortcuts, and Window State */}
-      <div className="flex items-center gap-2">
-        {/* Command Palette Trigger */}
+      {/* Right Toolbar: Search, Notifications, Language, Academic Year, Profile */}
+      <div className="flex items-center gap-2 sm:gap-3">
+        {/* Manual Edition Quick Hub Button */}
+        <button
+          onClick={() => onNavigate('manual_edition')}
+          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-[#16836B]/80 hover:bg-[#16836B] border border-emerald-400/30 text-xs text-white font-medium transition shadow-sm"
+          title="Manual Edition Hub (Edit Records & Sync to Sheets)"
+        >
+          <Edit3 className="w-3.5 h-3.5 text-[#C49A45]" />
+          <span className="hidden sm:inline">Manual Edition</span>
+        </button>
+
+        {/* Global Search Button */}
         <button
           onClick={onOpenCommandPalette}
-          className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-900/90 hover:bg-slate-800 border border-slate-700/80 hover:border-emerald-600/60 text-xs text-slate-200 transition-all shadow-inner group"
-          title="Search anything across all modules (Ctrl+K or Cmd+K)"
+          className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 border border-white/20 text-xs text-slate-200 transition shadow-inner"
+          title="Search anything (Ctrl+K or Cmd+K)"
         >
-          <Search className="w-3.5 h-3.5 text-emerald-400 group-hover:scale-110 transition-transform" />
-          <span className="hidden lg:inline text-slate-300">Search records...</span>
-          <kbd className="hidden sm:inline-block px-1.5 py-0.5 text-[10px] font-mono bg-slate-950 border border-slate-800 rounded text-slate-400">
+          <Search className="w-3.5 h-3.5 text-[#C49A45]" />
+          <span className="hidden md:inline text-xs text-slate-200">Search records...</span>
+          <kbd className="hidden lg:inline-block px-1.5 py-0.5 text-[9px] font-mono bg-black/30 border border-white/20 rounded text-slate-300">
             ⌘K
           </kbd>
         </button>
 
-        {/* PWA Desktop & Android Install Launcher */}
-        <PWAInstallButton variant="header" />
-        <PWAInstallButton variant="header-usb" />
+        {/* Notifications Dropdown */}
+        <div className="relative" ref={notificationsRef}>
+          <button
+            onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
+            className="p-2 rounded-lg bg-white/10 hover:bg-white/20 text-white relative transition"
+            title="Notifications"
+          >
+            <Bell className="w-4 h-4 text-slate-200" />
+            <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
+          </button>
 
-        {/* AI Assistant Quick Trigger */}
-        <button
-          onClick={() => onNavigate('ai_assistant')}
-          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-gradient-to-r from-teal-950 to-emerald-950 hover:from-teal-900 hover:to-emerald-900 border border-emerald-600/50 hover:border-emerald-400 text-xs text-emerald-200 transition-all shadow-sm font-medium"
-          title="Open AI Institutional & Tajweed Advisor"
-        >
-          <Sparkles className="w-3.5 h-3.5 text-amber-400 animate-spin-slow" />
-          <span className="hidden sm:inline">AI Advisor</span>
-        </button>
+          {isNotificationsOpen && (
+            <div className="absolute right-0 mt-2 w-80 bg-white text-[#273449] rounded-xl shadow-2xl border border-slate-200 py-2 z-50 animate-in fade-in zoom-in-95 duration-150">
+              <div className="px-4 py-2 border-b border-slate-100 flex items-center justify-between">
+                <span className="font-bold text-xs text-[#17365D]">Notifications & Circulars</span>
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-rose-100 text-rose-800 font-bold">
+                  2 Unread
+                </span>
+              </div>
+              <div className="divide-y divide-slate-100 max-h-64 overflow-y-auto">
+                {sampleNotifications.map(n => (
+                  <div key={n.id} className="p-3 hover:bg-slate-50 transition cursor-pointer text-xs">
+                    <div className="font-semibold text-slate-800 leading-tight">{n.title}</div>
+                    <div className="text-[10px] text-slate-400 mt-1">{n.time}</div>
+                  </div>
+                ))}
+              </div>
+              <div className="p-2 border-t border-slate-100 text-center">
+                <button
+                  onClick={() => {
+                    setIsNotificationsOpen(false);
+                    onNavigate('circulars_notices');
+                  }}
+                  className="text-[11px] font-bold text-[#16836B] hover:underline"
+                >
+                  View All Announcements
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
 
-        {/* Document & Print Quick Button */}
-        <button
-          onClick={() => onNavigate('document_center')}
-          className="p-2 rounded-lg bg-slate-900/80 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-800 transition-colors"
-          title="Print Official Ethiopian Stamped Receipts, ID Cards & Transcripts"
-        >
-          <Printer className="w-4 h-4" />
-        </button>
+        {/* Language Selector Dropdown */}
+        <div className="relative" ref={languageRef}>
+          <button
+            onClick={() => setIsLanguageOpen(!isLanguageOpen)}
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 border border-white/20 text-xs font-semibold text-white transition"
+            title="Select Language"
+          >
+            <Globe className="w-3.5 h-3.5 text-[#C49A45]" />
+            <span className="uppercase text-[11px]">{currentLanguage}</span>
+            <ChevronDown className="w-3 h-3 text-slate-300" />
+          </button>
 
-        {/* Maximize/Restore Toggle */}
-        <button
-          onClick={onToggleMaximize}
-          className="p-2 rounded-lg bg-slate-900/80 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-800 transition-colors hidden sm:flex"
-          title={isMaximized ? 'Restore Window Size' : 'Maximize Window'}
-        >
-          {isMaximized ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
-        </button>
+          {isLanguageOpen && (
+            <div className="absolute right-0 mt-2 w-48 bg-white text-[#273449] rounded-xl shadow-2xl border border-slate-200 py-1.5 z-50 text-xs">
+              {[
+                { code: 'en', label: 'English', sub: 'Inter font' },
+                { code: 'om', label: 'Afaan Oromoo', sub: 'Noto Sans' },
+                { code: 'ar', label: 'العربية (Arabic RTL)', sub: 'Noto Naskh Arabic' },
+                { code: 'am', label: 'አማርኛ (Amharic)', sub: 'Noto Sans Ethiopic' },
+              ].map(lang => (
+                <button
+                  key={lang.code}
+                  onClick={() => {
+                    onLanguageChange(lang.code as SupportedLanguage);
+                    setIsLanguageOpen(false);
+                  }}
+                  className={`w-full px-3 py-2 text-left flex items-center justify-between hover:bg-slate-50 transition ${
+                    currentLanguage === lang.code ? 'font-bold text-[#17365D] bg-blue-50/50' : 'text-slate-700'
+                  }`}
+                >
+                  <div>
+                    <span className="block">{lang.label}</span>
+                    <span className="text-[10px] text-slate-400 block">{lang.sub}</span>
+                  </div>
+                  {currentLanguage === lang.code && <Check className="w-3.5 h-3.5 text-[#16836B]" />}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Academic Year Selector Dropdown */}
+        <div className="relative hidden sm:block" ref={yearRef}>
+          <button
+            onClick={() => setIsYearOpen(!isYearOpen)}
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 border border-white/20 text-xs font-semibold text-white transition"
+            title="Academic Year"
+          >
+            <CalendarIcon className="w-3.5 h-3.5 text-[#C49A45]" />
+            <span className="text-[11px] font-mono">{academicYear.split(' ')[0]}</span>
+            <ChevronDown className="w-3 h-3 text-slate-300" />
+          </button>
+
+          {isYearOpen && (
+            <div className="absolute right-0 mt-2 w-60 bg-white text-[#273449] rounded-xl shadow-2xl border border-slate-200 py-1.5 z-50 text-xs">
+              {[
+                '2026/2027 (2019 E.C.)',
+                '2025/2026 (2018 E.C.)',
+                '2024/2025 (2017 E.C.)',
+              ].map(year => (
+                <button
+                  key={year}
+                  onClick={() => {
+                    onAcademicYearChange(year);
+                    setIsYearOpen(false);
+                  }}
+                  className={`w-full px-3 py-2 text-left flex items-center justify-between hover:bg-slate-50 transition ${
+                    academicYear === year ? 'font-bold text-[#17365D] bg-blue-50/50' : 'text-slate-700'
+                  }`}
+                >
+                  <span>{year}</span>
+                  {academicYear === year && <Check className="w-3.5 h-3.5 text-[#16836B]" />}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* User Profile & Account Dropdown with Official Web Profile Icon */}
+        <div className="relative" ref={profileRef}>
+          <button
+            onClick={() => setIsProfileOpen(!isProfileOpen)}
+            className="flex items-center gap-2 pl-1.5 pr-1.5 py-1 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 transition group"
+            title="Account & Institutional Profile"
+          >
+            <div className="w-8 h-8 rounded-full border border-[#C49A45] p-0.5 bg-white shadow-sm flex items-center justify-center shrink-0">
+              <img
+                src="/assets/aistudio/image_9f3d5314.png"
+                alt="Profile Icon"
+                className="w-full h-full rounded-full object-contain"
+              />
+            </div>
+            <div className="hidden lg:block text-left text-xs leading-none mr-1">
+              <span className="font-bold text-white block">Al-Sheikh Khadir</span>
+              <span className="text-[9px] text-[#C49A45] block mt-0.5">Head Mudir</span>
+            </div>
+            <ChevronDown className="w-3 h-3 text-slate-300" />
+          </button>
+
+          {isProfileOpen && (
+            <div className="absolute right-0 mt-2 w-64 bg-white text-[#273449] rounded-xl shadow-2xl border border-slate-200 py-2 z-50 text-xs">
+              <div className="px-4 py-2 border-b border-slate-100 flex items-center gap-3">
+                <img
+                  src="/assets/aistudio/image_9f3d5314.png"
+                  alt="Al-Furqan Emblem"
+                  className="w-10 h-10 rounded-full border border-[#16836B] p-0.5 bg-white object-contain shrink-0"
+                />
+                <div>
+                  <span className="font-bold text-sm text-[#17365D] block">Al-Sheikh Khadir Hamza</span>
+                  <span className="text-[10px] text-slate-400 block">ibrishabdela9@gmail.com</span>
+                  <span className="text-[9px] px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-semibold mt-0.5 inline-block">
+                    Head Mudir & Principal
+                  </span>
+                </div>
+              </div>
+              <div className="py-1">
+                <button
+                  onClick={() => {
+                    setIsProfileOpen(false);
+                    onNavigate('settings');
+                  }}
+                  className="w-full px-4 py-2 text-left hover:bg-slate-50 flex items-center gap-2 text-slate-700"
+                >
+                  <Settings className="w-3.5 h-3.5 text-slate-400" />
+                  <span>Academy Settings</span>
+                </button>
+                <button
+                  onClick={() => {
+                    setIsProfileOpen(false);
+                    onNavigate('document_center');
+                  }}
+                  className="w-full px-4 py-2 text-left hover:bg-slate-50 flex items-center gap-2 text-slate-700"
+                >
+                  <Printer className="w-3.5 h-3.5 text-slate-400" />
+                  <span>Document & Print Hub</span>
+                </button>
+              </div>
+              <div className="pt-1 border-t border-slate-100">
+                <button
+                  onClick={() => {
+                    setIsProfileOpen(false);
+                    onNavigate('dashboard');
+                  }}
+                  className="w-full px-4 py-2 text-left hover:bg-rose-50 flex items-center gap-2 text-rose-700 font-semibold"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                  <span>Switch Role / Lock Screen</span>
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </header>
   );
